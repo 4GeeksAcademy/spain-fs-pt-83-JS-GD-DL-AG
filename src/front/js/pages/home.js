@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import "../../styles/home.css";
-import FeaturesCarousel from "../component/featuresCarousel.jsx";
-import OpinionsBoard from "../component/opinionsBoard.jsx";
-import SuperposedTitle from "../component/superposedTitle.jsx";
-import Jumbotron from "../component/jumbotron.jsx";
-import SuperposedJumbo from "../component/superposedJumbo.jsx";
-import WhyChooseLearnVault from "../component/WhyChooseLearnVault.jsx";
+import { FeaturesCarousel } from "../component/featuresCarousel";
+import { OpinionsBoard } from "../component/opinionsBoard";
+import { SuperposedTitle } from "../component/superposedTitle";
+import { Jumbotron } from "../component/jumbotron";
+import { SuperposedJumbo } from "../component/superposedJumbo";
+import { WhyChooseLearnVault } from "../component/WhyChooseLearnVault";
 
 export const Home = () => {
   const [currentBackground, setCurrentBackground] = useState("#FFD700");
@@ -20,7 +20,7 @@ export const Home = () => {
       <SuperposedJumbo />
       <FeaturesCarousel />
       <WhyChooseLearnVault />
-      <SuperposedTitle text="OUR STUDENTS SHARE THEIR EXPERIENCES" dynamicColor={currentBackground}/>
+      <SuperposedTitle text="OUR STUDENTS SHARE THEIR EXPERIENCES" dynamicColor={currentBackground} />
       <OpinionsBoard onBackgroundChange={handleBackgroundChange} />
     </div>
   );
