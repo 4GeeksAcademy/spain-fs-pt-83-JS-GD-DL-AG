@@ -49,4 +49,4 @@ class Favorites(db.Model):
     documents = db.relationship('Documents', back_populates='favorites')
 
     def __repr__(self):
-        return f'<Favorites user_id={self.user_id} document_id={self.document_id}>'
+        return f'<Favorites user_id={self.user_id} document_id={self.documents_id}>'

@@ -163,7 +163,7 @@ def handle_search():
 
 
 # Nueva ruta para login y autenticación
-@api.route('/login', methods=['POST']
+@api.route('/login', methods=['POST'])
 def login_user():
     
     # Ruta para autenticar a un usuario con email y password.
@@ -174,8 +174,8 @@ def login_user():
     if body is None or "email" not in body or "password" not in body:
         return jsonify({'msg': 'Faltan credenciales'}), 400
 
-    email = body["email"]
-    password = body["password"]
+    email = request.get_json()['email']
+    password = request.get_json()['password']
 
     # Buscar usuario por email
     user = User.query.filter_by(email=email, password=password).first()
