@@ -22,10 +22,6 @@ static_file_dir = os.path.join(os.path.dirname(
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
-<<<<<<< HEAD
-# Configuración de la base de datos
-db_url = os.getenv("DATABASE_URL")
-=======
 app.config["JWT_SECRET_KEY"] = "scret_key"
 jwt = JWTManager(app)
 
@@ -33,7 +29,6 @@ jwt = JWTManager(app)
 
 # database configuration 
 db_url = os.getenv("DATABASE_URL")   
->>>>>>> main
 if db_url is not None:
      app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace(
          "postgres://", "postgresql://")

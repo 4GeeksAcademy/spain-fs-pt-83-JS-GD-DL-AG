@@ -12,10 +12,6 @@ api = Blueprint('api', __name__)
 # Allow CORS requests to this API
 CORS(api)
 
-# Leer configuraciones desde el archivo .env
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "clave_por_defecto")
-TOKEN_EXPIRATION_HOURS = int(os.getenv("TOKEN_EXPIRATION_HOURS", 1))
-
 
 @api.route('/signup', methods=['POST'])
 def handle_create_user():
@@ -166,5 +162,28 @@ def handle_search():
     return jsonify(response_body), 200
 
 
+# Nueva ruta para login y autenticación
+@api.route('/login', methods=['POST']
+def login_user():
+    
+    # Ruta para autenticar a un usuario con email y password.
+    # Genera un token JWT si las credenciales son válidas.
+    
+    body = request.get_json()
+    
+    if body is None or "email" not in body or "password" not in body:
+        return jsonify({'msg': 'Faltan credenciales'}), 400
 
-   
+    email = body["email"]
+    password = body["password"]
+
+    # Buscar usuario por email
+    user = User.query.filter_by(email=email, password=password).first()
+
+    if user is None or not user.password == password:  # Comprobar que el usuario exista y la contraseña coincida
+        return jsonify({'msg': 'Credenciales inválidas'}), 401
+
+    # Generar el token JWT
+    token = create_access_token(identity=user.email)
+
+    return jsonify({'msg': 'Inicio de sesión exitoso', 'token': token}), 200
