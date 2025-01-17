@@ -48,52 +48,46 @@ export const Register = () => {
       return;
     }
 
-    // TODO: Implement API call for user registration
-    // Example:
-    // try {
-    //   const response = await fetch('YOUR_REGISTER_API_ENDPOINT', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //       name: formData.name,
-    //       email: formData.email,
-    //       password: formData.password,
-    //     }),
-    //   });
-    //
-    //   const data = await response.json();
-    //
-    //   if (!response.ok) {
-    //     setErrorMessage(data.message || 'Error registering user.');
-    //     return;
-    //   }
-    //
-    //   setErrorMessage('');
-    //   setSuccessMessage('Registration successful! You can now log in.');
-    //
-    //   // Clear the form
-    //   setFormData({
-    //     name: '',
-    //     email: '',
-    //     password: '',
-    //     confirmPassword: '',
-    //   });
-    //
-    //   // Redirect to login after a short delay
-    //   setTimeout(() => {
-    //     navigate('/login');
-    //   }, 2000);
-    // } catch (error) {
-    //   console.error('Error connecting to the server:', error);
-    //   setErrorMessage('Could not connect to the server.');
-    // }
+    try {
+      const response = await fetch('https://miniature-space-telegram-g45vgq5r75jw3wj94-3001.app.github.dev/api/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
 
-    // Placeholder for future implementation
-    console.log('Register form submitted:', formData);
-    // You can remove the above line when implementing the API call
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrorMessage(data.msg || 'Error registering user.');
+        return;
+      }
+
+      setErrorMessage('');
+      setSuccessMessage('Registration successful! You can now log in.');
+
+      setFormData({
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+      });
+
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+    } catch (error) {
+      console.error('Error connecting to the server:', error);
+      setErrorMessage('Could not connect to the server.');
+    }
   };
+
+   
 
   return (
     <Grid container className="signup-container">

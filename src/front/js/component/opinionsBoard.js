@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography, Avatar, Grid, IconButton } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
-import QuoteImage from "../../img/quote.png";
+import QuoteImage from "../../img/quote.webp";
 
 const testimonials = [
   {

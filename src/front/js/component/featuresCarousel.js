@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import FeaturesResource from "../../img/Features/FeaturesResource.png";
-import FeaturesClass from "../../img/Features/FeaturesClass.png";
-import FeaturesDegree from "../../img/Features/FeaturesDegree.png";
-import FeaturesGamification from "../../img/Features/FeaturesGamification.png";
-import FeaturesTalent from "../../img/Features/FeaturesTalent.png";
+import FeaturesResource from "../../img/Features/FeaturesResource.webp";
+import FeaturesClass from "../../img/Features/FeaturesClass.webp";
+import FeaturesDegree from "../../img/Features/FeaturesDegree.webp";
+import FeaturesGamification from "../../img/Features/FeaturesGamification.webp";
+import FeaturesTalent from "../../img/Features/FeaturesTalent.webp";
 
 const features = [
   {

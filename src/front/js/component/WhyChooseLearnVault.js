@@ -3,7 +3,7 @@ import { Box, Typography, Grid, Card, CardContent, Avatar } from "@mui/material"
 import SchoolIcon from "@mui/icons-material/School";
 import PeopleIcon from "@mui/icons-material/People";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
-import chooseBg from "../../img/chooseBg.jpg";
+import chooseBg from "../../img/chooseBg.webp";
 
 const cardsData = [
   {
@@ -33,7 +33,7 @@ export const WhyChooseLearnVault = () => {
   return (
     <Box
       sx={{
-        minHeight: "50vh", // Altura mínima para el componente principal
+        minHeight: "50vh",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -51,7 +51,7 @@ export const WhyChooseLearnVault = () => {
         spacing={10}
         justifyContent="center"
         alignItems="center"
-        sx={{ maxWidth: "1200px", width: "100%" }} // Limita el ancho máximo
+        sx={{ maxWidth: "1200px", width: "100%" }}
       >
         {cardsData.map((card, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
@@ -60,7 +60,7 @@ export const WhyChooseLearnVault = () => {
                 borderRadius: "16px",
                 boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
                 transition: "transform 0.3s ease",
-                minHeight: "320px", // Altura mínima de las tarjetas
+                minHeight: "320px",
                 background: card.gradient,
                 display: "flex",
                 flexDirection: "column",

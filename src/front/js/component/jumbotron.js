@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, Typography } from "@mui/material";
-import Jumbo from "../../img/Jumbo.jpg";
+import Jumbo from "../../img/Jumbo.webp";
 
 export const Jumbotron = () => {
     const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 });
