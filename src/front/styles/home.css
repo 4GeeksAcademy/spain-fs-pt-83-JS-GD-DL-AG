@@ -1,7 +1,89 @@
-/*
-    home.css: This website contains selectors only used in home.css
+.jumbotron {
+    text-align: center;
+  }
+  
+  .jumbotron h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+  }
+  
+  .jumbotron p {
+    font-size: 1.2rem;
+    margin-top: 15px;
+  }
 
-    All pages share the styles on index.css but you should create 
-    one more css for each page that will contain the selected used 
-    on that page only (the ones not reused in other pages).
-*/
+  .feature-slide {
+    padding: 40px 20px;
+  }
+  
+  .feature-slide h3 {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .feature-slide p {
+    font-size: 1rem;
+    margin-top: 10px;
+  }
+
+  .opinions .nav-tabs {
+    margin-bottom: 20px;
+  }
+  
+  .opinions .card {
+    border: none;
+  }
+
+  .information .info-card {
+    margin-bottom: 20px;
+  }
+
+    .jumbotron h1 {
+      font-size: 2rem;
+    }
+  
+    .jumbotron p {
+      font-size: 1rem;
+    }
+  
+    .feature-slide h3 {
+      font-size: 1.2rem;
+    }
+  
+    .feature-slide p {
+      font-size: 0.9rem;
+    }
+  
+    .opinions h2, .information h2 {
+      font-size: 1.5rem;
+    }
+  
+    .info-card h5 {
+      font-size: 1.2rem;
+    }
+  
+  @media (max-width: 740px) {
+    .jumbotron h1 {
+      font-size: 1.5rem;
+    }
+  
+    .jumbotron p {
+      font-size: 0.9rem;
+    }
+  
+    .feature-slide {
+      padding: 20px 10px;
+    }
+  
+    .feature-slide h3 {
+      font-size: 1rem;
+    }
+  
+    .feature-slide p {
+      font-size: 0.8rem;
+    }
+  
+    .info-card h5 {
+      font-size: 1rem;
+    }
+  }

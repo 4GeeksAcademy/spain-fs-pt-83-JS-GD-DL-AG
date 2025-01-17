@@ -1,0 +1,104 @@
+.features-carousel {
+    background-color: var(--background-color, #ffffff);
+    color: var(--text-color, #333333);
+    text-align: center;
+  }
+  
+  .features-carousel h3 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+  
+  .features-carousel p {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  /* Carousel Navigation Buttons */
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 5%;
+  }
+  
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+  }
+  
+  .carousel-control-prev-icon:hover,
+  .carousel-control-next-icon:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  
+  .carousel-indicators [data-bs-target] {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .carousel-indicators [data-bs-target].active {
+    background-color: rgba(255, 255, 255, 0.9);
+  }
+  
+  /* Adaptar las imágenes de fondo */
+  .carousel-item:nth-child(1),
+  .carousel-item:nth-child(2),
+  .carousel-item:nth-child(3),
+  .carousel-item:nth-child(4),
+  .carousel-item:nth-child(5) {
+    background-size: cover; /* Ajustar la imagen para cubrir el contenedor */
+    background-position: center; /* Centrar la imagen */
+    background-repeat: no-repeat; /* Evitar repetición */
+    min-height: 300px; /* Altura mínima para el contenedor del carrusel */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .carousel-item:nth-child(1) {
+    background-image: url('https://cgoe.stanford.edu/sites/default/files/styles/widescreen_small/public/2020-08/online-executive-education-program-through-OpenClassrooms.jpg?itok=BSkQYTog');
+    color: white;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  }
+  
+  .carousel-item:nth-child(2) {
+    background-image: url('https://blog.mopria.org/wp-content/uploads/2022/02/iStock-1178808605-paper-stack.jpg');
+    color: white;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  }
+  
+  .carousel-item:nth-child(3) {
+    background-image: url('https://hgs.cx/wp-content/uploads/2022/10/blog-banner-Gamification.webp');
+    color: white;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  }
+  
+  .carousel-item:nth-child(4) {
+    background-image: url('https://www.shutterstock.com/image-vector/sociology-human-behavior-study-society-600nw-2107956827.jpg');
+    color: white;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  }
+  
+  .carousel-item:nth-child(5) {
+    background-image: url('https://miro.medium.com/v2/resize:fit:1200/1*1e6J5KYYvwlOXRVj9-RkQA.png');
+    color: white;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  }  
+
+  /* Ocultar slides no activos */
+.carousel-item {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out; /* Transición suave */
+  }
+  
+  /* Mostrar el slide activo */
+  .carousel-item.active {
+    opacity: 1;
+    z-index: 2; /* Asegura que el slide activo esté en el frente */
+  }
+  
+  /* Evitar que los slides anteriores interfieran */
+  .carousel-item:not(.active) {
+    z-index: 1; /* Coloca los slides no activos detrás */
+  }
