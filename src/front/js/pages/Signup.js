@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, TextField, Typography, Grid, Link } from "@mui/material";
 import { CheckCircleOutline, People, School, GroupWork } from "@mui/icons-material"
-import "../../styles/signup.css";
+import "../../styles/Home/signup.css";
 
 
 export const Register = () => {

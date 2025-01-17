@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import "../../styles/SuperposedTitle.css";
+import "../../styles/Home/SuperposedTitle.css";
 
 export const SuperposedTitle = ({
   text = ["Default", "Title"],

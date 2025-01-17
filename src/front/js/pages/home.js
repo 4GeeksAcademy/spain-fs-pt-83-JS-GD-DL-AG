@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../../styles/home.css";
+import "../../styles/Home/home.css";
 import { FeaturesCarousel } from "../component/featuresCarousel.js";
 import { OpinionsBoard } from "../component/opinionsBoard";
 import { SuperposedTitle } from "../component/superposedTitle";
