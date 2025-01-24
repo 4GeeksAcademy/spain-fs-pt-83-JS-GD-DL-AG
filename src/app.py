@@ -12,6 +12,20 @@ from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_jwt_extended import JWTManager
+from api.utils import dbx, verify_dropbox_connection
+
+app = Flask(__name__)
+
+# Verificar conexión con Dropbox
+try:
+    print("Verificando conexión con Dropbox...")
+    linked_account = verify_dropbox_connection()
+    print("Conexión exitosa:", linked_account)
+except Exception as e:
+    print("Error conectando a Dropbox:", e)
+
+if __name__ == "__main__":
+    app.run(debug=True)
 
 
 # from models import Person

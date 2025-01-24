@@ -3,11 +3,10 @@
 # """
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, User, Documents, Favorites
-from api.utils import generate_sitemap, APIException
+from api.utils import generate_sitemap, APIException, dbx  # Importar `dbx` para manejar Dropbox
 from flask_cors import CORS
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 import os
-
 
 api = Blueprint('api', __name__)
 
@@ -336,6 +335,65 @@ def delete_favorite(id):
     db.session.delete(favorite)
     db.session.commit()
     return jsonify({'msg': 'Favorito eliminado correctamente'}), 200
+
+
+@api.route('/dropbox/upload', methods=['POST'])
+@jwt_required()
+def upload_to_dropbox():
+    """
+    Sube un archivo a Dropbox.
+    - Requiere un archivo enviado como parte del formulario.
+    - Guarda el archivo en la carpeta raíz de Dropbox.
+    """
+    try:
+        # Obtener el archivo enviado en la solicitud
+        if 'file' not in request.files:
+            return jsonify({'msg': 'No se encontró ningún archivo en la solicitud'}), 400
+
+        file = request.files['file']  # Archivo enviado en el formulario
+        file_name = file.filename     # Nombre del archivo
+
+        # Leer el contenido del archivo
+        file_content = file.read()
+
+        # Subir el archivo a Dropbox
+        dropbox_path = f'/{file_name}'  # Guardar el archivo en la carpeta raíz de Dropbox
+        dbx.files_upload(file_content, dropbox_path)
+
+        return jsonify({'msg': f'Archivo {file_name} subido correctamente a Dropbox'}), 201
+    except Exception as e:
+        return jsonify({'msg': 'Error al subir archivo a Dropbox', 'error': str(e)}), 500
+
+
+@api.route('/dropbox/download', methods=['POST'])
+@jwt_required()
+def download_from_dropbox():
+    """
+    Descarga un archivo desde Dropbox.
+    - Requiere la ruta del archivo en Dropbox enviada en el cuerpo de la solicitud.
+    """
+    try:
+        body = request.get_json()
+
+        # Verificar que se envió la ruta del archivo
+        if not body or 'path' not in body:
+            return jsonify({'msg': 'Falta la ruta del archivo en la solicitud'}), 400
+
+        dropbox_path = body['path']  # Ruta del archivo en Dropbox (por ejemplo, "/mi_archivo.txt")
+
+        # Descargar el archivo desde Dropbox
+        metadata, file_content = dbx.files_download(path=dropbox_path)
+
+        # Enviar el archivo como respuesta
+        response = jsonify({
+            'msg': 'Archivo descargado correctamente',
+            'file_name': metadata.name,
+            'content': file_content.content.decode('utf-8')  # Decodificar si el archivo es texto
+        })
+        response.status_code = 200
+        return response
+    except Exception as e:
+        return jsonify({'msg': 'Error al descargar archivo desde Dropbox', 'error': str(e)}), 500
 
 
 
