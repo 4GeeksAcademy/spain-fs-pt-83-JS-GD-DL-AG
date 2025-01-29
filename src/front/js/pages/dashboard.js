@@ -4,6 +4,8 @@ import { Box, Button, Modal, Typography } from "@mui/material";
 import { OrganizationPlanning } from "../component/dashboard/OrganizationPlanning";
 import { Gamification } from "../component/dashboard/Gamification";
 import "../../styles/Dashboard/dashboard.css";
+import axios from "axios";
+
 
 export const Dashboard = () => {
   const [openProfileModal, setOpenProfileModal] = useState(false);
@@ -25,7 +27,7 @@ export const Dashboard = () => {
       });
       setDashboardMessage(response.data.message);
     } catch (error) {
-      console.error("Error fetching dashboard data:", error.response.data);
+      console.error("Error fetching dashboard data:", error.response?.data || error);
     }
   };
 
@@ -40,13 +42,12 @@ export const Dashboard = () => {
       });
       setSearchMessage(response.data.message);
     } catch (error) {
-      console.error("Error fetching search data:", error.response.data);
+      console.error("Error fetching search data:", error.response?.data || error);
     }
   };
 
   useEffect(() => {
     // Authenticate and fetch data on component mount
-  
     fetchDashboardData();
     fetchSearchData();
   }, []);

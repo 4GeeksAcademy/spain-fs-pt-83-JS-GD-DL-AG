@@ -1,5 +1,4 @@
 from flask import jsonify, url_for
-import dropbox
 import os
 
 class APIException(Exception):
@@ -42,15 +41,3 @@ def generate_sitemap(app):
         <p>Remember to specify a real endpoint path like: </p>
         <ul style="text-align: left;">"""+links_html+"</ul></div>"
 
-# Configuración e inicialización del cliente de Dropbox
-DROPBOX_ACCESS_TOKEN = os.getenv("DROPBOX_ACCESS_TOKEN", "tu_access_token")
-dbx = dropbox.Dropbox(DROPBOX_ACCESS_TOKEN)
-
-def verify_dropbox_connection():
-    """
-    Verifica la conexión con Dropbox y retorna información de la cuenta vinculada.
-    """
-    try:
-        return dbx.users_get_current_account()
-    except Exception as e:
-        raise Exception(f"Dropbox connection error: {e}")

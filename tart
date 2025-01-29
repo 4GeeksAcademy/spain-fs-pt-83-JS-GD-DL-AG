@@ -1,0 +1,59 @@
+[33med7f24b[m[33m ([m[1;36mHEAD -> [m[1;32mangel[m[33m, [m[1;31morigin/angel[m[33m)[m api drpbox
+[33m087bebc[m crud favorites
+[33m36a4c49[m Merge branch 'main' into angel
+[33m1641219[m Merge pull request #19 from 4GeeksAcademy/John-back
+[33m00f7968[m provisional CRUD for documents
+[33mccf8ccb[m Merge pull request #18 from 4GeeksAcademy/John-back
+[33m6b4dca1[m import os
+[33m24973b6[m .
+[33m770599b[m Merge branch 'main' into John-back
+[33m61c2d2d[m Merge branch 'main' into John-back
+[33mb71e9f0[m Merge pull request #16 from 4GeeksAcademy/lahuella-front
+[33mb5f181f[m Routes env
+[33mbb1e718[m Merge branch 'main' of https://github.com/4GeeksAcademy/spain-fs-pt-83-JS-GD-DL-AG
+[33mc9e0f97[m .
+[33m30833f7[m Merge pull request #15 from 4GeeksAcademy/lahuella-front
+[33mb7f756d[m Route Login
+[33mfd12ab4[m Merge pull request #14 from 4GeeksAcademy/lahuella-front
+[33m13d6c81[m Routes fixed front-back
+[33m629c4b0[m act
+[33m10e4baf[m Merge pull request #13 from dernestolpz/dernestolpz-front
+[33m3d1e14f[m  connecting dashboard to back
+[33mf5cfb35[m updated2
+[33m0a4424e[m changes1
+[33md091292[m Merge pull request #11 from 4GeeksAcademy/lahuella-front
+[33mbfc73cd[m Merge pull request #12 from 4GeeksAcademy/John-back
+[33m7ae2692[m Merge branch 'main' of https://github.com/4GeeksAcademy/spain-fs-pt-83-JS-GD-DL-AG into lahuella-front
+[33m920e210[m Error sintaxis modelos
+[33m711878b[m Dashboard 0.1
+[33m2aa03c4[m error sintaxis modelos
+[33m2bda0d0[m Merge pull request #10 from dernestolpz/dernestolpz-front
+[33me533115[m conectando login y register a API
+[33mfdd6059[m Merge pull request #9 from 4GeeksAcademy/optimize-img
+[33mf3083fe[m Resizing imgs
+[33m7f88d76[m updated
+[33meef0229[m Scroll
+[33mb751d4d[m Merge pull request #8 from 4GeeksAcademy/lahuella-frontend
+[33m53fcf9c[m Home, Login, Signup Visuals
+[33m76a3b90[m Merge branch 'main' of https://github.com/4GeeksAcademy/spain-fs-pt-83-JS-GD-DL-AG into lahuella-frontend
+[33me3b96ce[m Merge pull request #7 from 4GeeksAcademy/John-back
+[33m9660ca5[m Merge branch 'main' into John-back
+[33me6ef4e5[m first part of models and routes finished
+[33m1dcc611[m Modelos corregidos
+[33m66950f1[m Login Design, Revamp Navbar, Custom Home Text animations
+[33m108f5c6[m Merge pull request #6 from 4GeeksAcademy/lahuella-front
+[33mc3a1f4c[m Debug 1.0
+[33m7282eee[m models
+[33m7c5d0d8[m Merge pull request #3 from dernestolpz/dernestolpz-front
+[33m4ab0f64[m Merge branch 'main' into dernestolpz-front
+[33m484ef85[m second
+[33m36c4cab[m Merge pull request #2 from 4GeeksAcademy/lahuella-front
+[33mbfc021d[m Home 1.0
+[33m16b9bfd[m first
+[33m45a4b20[m first
+[33m82915e7[m ForeignKey error selved
+[33m999478d[m primer commit
+[33macaf775[m tables and models finished
+[33m0441e9b[m Working Front Components (FeatCarousel, SuperposedTitle, OpinionBoard)
+[33md7ee30f[m Inicio Front
+[33m3759c54[m Initial commit
