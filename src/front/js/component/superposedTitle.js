@@ -1,69 +1,52 @@
-import React, { useEffect, useRef, useState } from "react";
-import "../../styles/Home/SuperposedTitle.css";
+import React, { useEffect, useState } from "react";
+import { Box, Typography } from "@mui/material";
 
 export const SuperposedTitle = ({
-  text = ["Default", "Title"],
-  position = { top: "50%", left: "50%" },
-  rotation = 0,
+  text = "This is a Parallax Text",
+  offset = 0.3, // Controla la intensidad del efecto parallax
+  fontSize = "3rem",
 }) => {
-  const containerRef = useRef(null);
-  const [hasScrolled, setHasScrolled] = useState(false);
-  const [hasBeenVisible, setHasBeenVisible] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      setHasScrolled(true);
+      setScrollY(window.scrollY); // Captura la posición actual del scroll
     };
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && hasScrolled) {
-          setTimeout(() => {
-            setHasBeenVisible(true);
-          }, 500);
-        }
-      },
-      { threshold: 0.05 }
-    );
-
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
 
     window.addEventListener("scroll", handleScroll);
 
     return () => {
-      if (containerRef.current) observer.unobserve(containerRef.current);
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [hasScrolled]);
+  }, []);
 
   return (
-    <div
-      className={`words-container ${hasBeenVisible ? "visible" : ""}`}
-      ref={containerRef}
-      style={{
-        position: "absolute",
-        top: position.top,
-        left: position.left,
-        transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
-        zIndex: 999,
-        textShadow: "2px 2px 6px rgba(0, 0, 0, 0.7)",
+    <Box
+      sx={{
+        position: "relative",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        overflow: "hidden",
+        color: "white",
+        textAlign: "center",
+        background: "linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d)", // Fondo degradado
       }}
     >
-      <ul className="Words">
-        {text.map((line, index) => (
-          <li
-            className={`Words-line ${
-              index % 2 === 0 ? "line-from-top" : "line-from-bottom"
-            }`}
-            key={index}
-          >
-            <p>{line}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
+      <Typography
+        variant="h1"
+        sx={{
+          fontSize: fontSize,
+          fontWeight: "bold",
+          textShadow: "2px 2px 10px rgba(0, 0, 0, 0.5)",
+          transform: `translateY(${scrollY * offset}px)`, // Mueve el texto en función del scroll
+          transition: "transform 0.1s ease-out", // Suaviza el movimiento
+          zIndex: 2,
+        }}
+      >
+        {text}
+      </Typography>
+    </Box>
   );
 };
-

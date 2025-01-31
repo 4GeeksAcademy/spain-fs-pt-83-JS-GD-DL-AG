@@ -10,21 +10,21 @@ const cardsData = [
     title: "Comprehensive Resources",
     description:
       "Access a wide variety of educational materials like videos, books, and tools tailored for your success.",
-    gradient: "linear-gradient(135deg, #FFC3A0, #FFECB3)",
+    gradient: "linear-gradient(135deg, #ff9a8b, #ff6a88)",
     icon: <SchoolIcon sx={{ fontSize: 75, filter: "drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.3))", }} />,
   },
   {
     title: "Collaborative Community",
     description:
       "Connect with a thriving community to share knowledge, collaborate, and grow together.",
-    gradient: "linear-gradient(135deg, #A1C4FD, #C2E9FB)",
+    gradient: "linear-gradient(135deg, #ff9a8b, #ff6a88)",
     icon: <PeopleIcon sx={{ fontSize: 75, filter: "drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.3))", }} />,
   },
   {
     title: "Gamified Learning",
     description:
       "Earn badges, climb leaderboards, and enjoy a fun, interactive learning experience.",
-    gradient: "linear-gradient(135deg, #C5E1A5, #DCE775)",
+    gradient: "linear-gradient(135deg, #ff9a8b, #ff6a88)",
     icon: <EmojiEventsIcon sx={{ fontSize: 75, filter: "drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.3))", }} />,
   },
 ];
@@ -33,7 +33,7 @@ export const WhyChooseLearnVault = () => {
   return (
     <Box
       sx={{
-        minHeight: "50vh",
+        minHeight: "80vh",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",

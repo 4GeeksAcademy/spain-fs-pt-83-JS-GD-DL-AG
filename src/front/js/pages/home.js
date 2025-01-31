@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import "../../styles/Home/home.css";
 import { FeaturesCarousel } from "../component/featuresCarousel.js";
-import { OpinionsBoard } from "../component/opinionsBoard";
-import { SuperposedTitle } from "../component/superposedTitle";
+import { CustomerReviews } from "../component/customerReviews.js";
 import { Jumbotron } from "../component/jumbotron";
 import { WhyChooseLearnVault } from "../component/WhyChooseLearnVault";
 
@@ -18,24 +17,15 @@ export const Home = () => {
       <div id="jumbotron">
         <Jumbotron />
       </div>
-      <SuperposedTitle
-        text={["LearnVault", "Our Features"]}
-        position={{ top: "100%", left: "50%" }}
-        rotation={0}
-      />
       <div id="features">
         <FeaturesCarousel />
       </div>
       <div id="services">
         <WhyChooseLearnVault />
       </div>
-      <SuperposedTitle
-        text={["Users", "Experiences"]}
-        position={{ top: "210%", left: "50%" }}
-        rotation={0}
-      />
+      
       <div id="experiences">
-        <OpinionsBoard onBackgroundChange={handleBackgroundChange} />
+      <CustomerReviews />
       </div>
     </div>
   );

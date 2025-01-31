@@ -1,0 +1,239 @@
+.main-title {
+    display: flex;
+    justify-content: center;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    cursor: pointer;
+    background: linear-gradient(135deg, #ffffff, #f7f8fa);
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.card img {
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.card-content {
+    padding: 16px;
+}
+
+.card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-decoration: none;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+.card-description {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 16px;
+}
+
+.card-category {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 4px;
+}
+
+.filter-grid {
+    margin-bottom: 20px;
+}
+
+.filter-input {
+    width: 100%;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.filter-button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-weight: bold;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+.filter-button:hover {
+    background: linear-gradient(135deg, #00f2fe, #4facfe);
+}
+
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination .Mui-selected {
+    background-color: #646464 !important;
+    color: #fff !important;
+}
+
+.MuiModal-root {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.centered-title {
+    text-align: center;
+  }
+
+.modal-content {
+    background: linear-gradient(135deg, #ffffff, #f7f8fa);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    padding: 24px;
+    max-width: 800px;
+    width: 100%;
+}
+
+.modal-content h5 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 16px;
+    color: #333;
+}
+
+.modal-content .pdf-viewer {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    margin-top: 16px;
+    padding: 8px;
+    overflow: auto;
+}
+
+.modal-content button {
+    font-weight: bold;
+    border-radius: 8px;
+    text-transform: none;
+    display: flex;
+    justify-content: center;
+}
+
+.modal-content .MuiButton-containedPrimary {
+    background: linear-gradient(135deg, #34d058, #28a745);
+}
+
+.modal-content .MuiButton-containedPrimary:hover {
+    background: linear-gradient(135deg, #28a745, #34d058);
+}
+
+.modal-content .MuiButton-containedSecondary {
+    background: linear-gradient(135deg, #ff7676, #fc4b6c);
+}
+
+.modal-content .MuiButton-containedSecondary:hover {
+    background: linear-gradient(135deg, #fc4b6c, #ff7676);
+}
+
+.no-results {
+    text-align: center;
+    font-size: 1rem;
+    color: #888;
+    margin-top: 20px;
+}
+
+.loading {
+    display: block;
+    margin: 20px auto;
+    color: #4facfe;
+}
+
+@media (max-width: 1199px) and (min-width: 768px) {
+    .main-title {
+        font-size: 4vw;
+    }
+
+    .container {
+        padding: 3vw;
+    }
+
+    .card-title {
+        font-size: 1.6vw;
+    }
+
+    .card-description {
+        font-size: 1vw;
+    }
+}
+
+@media (max-width: 767px) and (min-width: 481px) {
+    .main-title {
+        font-size: 6vw;
+        text-align: center;
+    }
+
+    .container {
+        padding: 4vw;
+        margin-top: 15vh;
+    }
+
+    .card {
+        margin-bottom: 5vw;
+    }
+
+    .card-title {
+        font-size: 4vw;
+    }
+
+    .card-description {
+        font-size: 3vw;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 5vw;
+        margin-top: 20vh;
+    }
+
+    .main-title {
+        font-size: 8vw;
+        text-align: center;
+    }
+
+    .card {
+        margin-bottom: 5vw;
+        box-shadow: none;
+    }
+
+    .card-title {
+        font-size: 5vw;
+        text-align: center;
+    }
+
+    .card-description {
+        font-size: 4vw;
+        text-align: justify;
+    }
+
+    .modal-content {
+        padding: 5vw;
+    }
+
+    .pagination {
+        flex-direction: column;
+    }
+}
