@@ -359,31 +359,48 @@ def handle_delete_document(id):
 @api.route('/favorites', methods=['POST'])
 @jwt_required()
 def create_favorite():
+    try:
+        current_user_id = get_jwt_identity()
+        print(f"🔍 User identity received: {current_user_id}")  # <-- Depuración
 
-    current_user_id = get_jwt_identity()
-    body = request.get_json()
+        # Asegurar que es un número
+        user = User.query.filter_by(email=current_user_id).first()
+        if not user:
+            return jsonify({"msg": "Usuario no encontrado"}), 404
+        
+        body = request.get_json()
+        
+        if not body or "documents_id" not in body:
+            return jsonify({'msg': 'Faltan datos'}), 400
 
-    if not body or "documents_id" not in body:
-        return jsonify({'msg': 'Faltan datos'}), 400
+        document = Documents.query.get(body["documents_id"])
+        if not document:
+            return jsonify({'msg': 'Documento no encontrado'}), 404
 
-    document = Documents.query.get(body["documents_id"])
-    if not document:
-        return jsonify({'msg': 'Documento no encontrado'}), 404
+        new_favorite = Favorites(user_id=user.id, documents_id=body["documents_id"])  # <-- Usar user.id como número
+        
+        db.session.add(new_favorite)
+        db.session.commit()
 
-    new_favorite = Favorites(user_id=current_user_id, documents_id=body["documents_id"])
+        return jsonify({'msg': 'Favorito agregado correctamente', 'favorite': new_favorite.id}), 201
+
+    except Exception as e:
+        print(f"❌ Error interno: {e}")  # <-- Imprime el error en la consola del servidor
+        return jsonify({"error": "Error interno", "message": str(e)}), 500
     
-    db.session.add(new_favorite)
-    db.session.commit()
-
-    return jsonify({'msg': 'Favorito agregado correctamente', 'favorite': new_favorite.id}), 201
-
-
 @api.route('/favorites', methods=['GET'])
 @jwt_required()
 def get_favorites():
     try:
         current_user_id = get_jwt_identity()
-        favorites = Favorites.query.filter_by(user_id=current_user_id).all()
+        print(f"🔍 User identity received: {current_user_id}")  # <-- Depuración
+
+        # Asegurar que `current_user_id` es un número obteniendo el ID real del usuario
+        user = User.query.filter_by(email=current_user_id).first()
+        if not user:
+            return jsonify({"msg": "Usuario no encontrado"}), 404
+
+        favorites = Favorites.query.filter_by(user_id=user.id).all()  # <-- Usar `user.id`
 
         if not favorites:
             return jsonify({"message": "No hay favoritos"}), 200
@@ -398,25 +415,34 @@ def get_favorites():
         return jsonify(result), 200
 
     except Exception as e:
+        print(f"❌ Error interno: {e}")  # <-- Depuración
         return jsonify({"error": "Error interno", "message": str(e)}), 500
-
 
 @api.route('/favorites/<int:id>', methods=['DELETE'])
 @jwt_required()
 def delete_favorite(id):
+    try:
+        current_user_id = get_jwt_identity()
+        print(f"🔍 User identity received: {current_user_id}")  # <-- Depuración
 
-    current_user_id = get_jwt_identity()
-    
-    favorite = Favorites.query.filter_by(id=id, user_id=current_user_id).first()
-    
-    if not favorite:
-        return jsonify({'msg': 'Favorito no encontrado'}), 404
+        # Obtener ID real del usuario
+        user = User.query.filter_by(email=current_user_id).first()
+        if not user:
+            return jsonify({"msg": "Usuario no encontrado"}), 404
 
-    db.session.delete(favorite)
-    db.session.commit()
-    
-    return jsonify({'msg': 'Favorito eliminado correctamente'}), 200
+        favorite = Favorites.query.filter_by(id=id, user_id=user.id).first()  # <-- Usar `user.id`
 
+        if not favorite:
+            return jsonify({'msg': 'Favorito no encontrado'}), 404
+
+        db.session.delete(favorite)
+        db.session.commit()
+
+        return jsonify({'msg': 'Favorito eliminado correctamente'}), 200
+
+    except Exception as e:
+        print(f"❌ Error interno: {e}")  # <-- Depuración
+        return jsonify({"error": "Error interno", "message": str(e)}), 500
 
 ## CRUD tasks for calendar
 @api.route('/tasks', methods=['POST'])
