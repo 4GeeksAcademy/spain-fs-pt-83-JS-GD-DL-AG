@@ -713,11 +713,6 @@ def complete_action(user_id):
         badge_unlocked = Badge.query.get(1)  # Primera contribución
         new_badge = UserBadge(user_id=user.id, badge_id=badge_unlocked.id)
         db.session.add(new_badge)
-
-    if action == "download_file" and user.download_count >= 10:
-        badge_unlocked = Badge.query.get(2)  # Explorador
-        new_badge = UserBadge(user_id=user.id, badge_id=badge_unlocked.id)
-        db.session.add(new_badge)
         
     if action == "add_favorite" and not UserBadge.query.filter_by(user_id=user.id, badge_id=3).first(): 
         badge_unlocked = Badge.query.get(3)  

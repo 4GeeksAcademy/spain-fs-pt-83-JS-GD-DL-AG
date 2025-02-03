@@ -13,6 +13,8 @@ from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_jwt_extended import JWTManager
 
+
+
 ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(
     os.path.dirname(os.path.realpath(__file__)), "../public/"
@@ -51,19 +53,34 @@ def init_db_data():
             print("📌 Insertando insignias desde cero...")
             badges = [
                 Badge(
-                    name="Primer Recurso",
-                    description="Sube tu primer recurso",
+                    name="Contribuidor",
+                    description="Has subido 5 recursos!",
                     icon="https://example.com/icon1.png",
                 ),
                 Badge(
-                    name="Colaborador Activo",
-                    description="Contribuye con 10 recursos",
+                    name="Bibliotecario",
+                    description="Has contribuido con 10 recursos!",
                     icon="https://example.com/icon2.png",
                 ),
                 Badge(
-                    name="Maestro",
-                    description="Tus recursos han sido descargados 50 veces",
+                    name="Archivista",
+                    description="Mas de 20 recursos subidos!",
                     icon="https://example.com/icon3.png",
+                ),
+                Badge(
+                    name="Amigo",
+                    description="Has marcado 5 recursos como favoritos!",
+                    icon="https://example.com/icon_favorite_5.png", 
+                ),
+                Badge(
+                    name="Entusiasta",
+                    description="Has marcado 10 recursos como favoritos!",
+                    icon="https://example.com/icon_favorite_10.png", 
+                ),
+                Badge(
+                    name="Coleccionista",
+                    description="Has marcado más de 20 recursos como favoritos!",
+                    icon="https://example.com/icon_favorite_20.png", 
                 ),
             ]
             db.session.add_all(badges)

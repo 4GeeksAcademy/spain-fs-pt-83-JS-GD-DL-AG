@@ -160,8 +160,8 @@ class FavoriteBadge(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
     description = db.Column(db.String(255), nullable=False)
-    favorites_required = db.Column(db.Integer, nullable=False)  # Cantidad de favoritos requeridos para el nivel
-    xp_reward = db.Column(db.Integer, default=0)  # Experiencia ganada por alcanzar el nivel
+    favorites_required = db.Column(db.Integer, nullable=False)  
+    xp_reward = db.Column(db.Integer, default=0)  
 
     # Relación con Badge (muchos a uno)
     badge_id = db.Column(db.Integer, db.ForeignKey('badges.id', ondelete="CASCADE"))
@@ -196,14 +196,14 @@ class UserFavoriteBadge(db.Model):
 
     def assign_badge(self):
         if self.favorites_count >= 20:
-            badge = FavoriteBadge.query.filter_by(name="Superfan").first()
+            badge = FavoriteBadge.query.filter_by(name="Coleccionista").first()
             if not badge:
-                badge = FavoriteBadge(name="Superfan", favorites_required=20)
+                badge = FavoriteBadge(name="Coleccionista", favorites_required=20)
                 db.session.add(badge)
         elif self.favorites_count >= 10:
-            badge = FavoriteBadge.query.filter_by(name="Aficionado").first()
+            badge = FavoriteBadge.query.filter_by(name="Entusiasta").first()
             if not badge:
-                badge = FavoriteBadge(name="Aficionado", favorites_required=10)
+                badge = FavoriteBadge(name="Entusiasta", favorites_required=10)
                 db.session.add(badge)
         elif self.favorites_count >= 5:
             badge = FavoriteBadge.query.filter_by(name="Amigo").first()
