@@ -11,12 +11,13 @@ import CloseIcon from "@mui/icons-material/Close";
 import SearchIcon from "@mui/icons-material/Search";
 import UploadIcon from "@mui/icons-material/Upload";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import EditIcon from "@mui/icons-material/Edit";
 import { Search } from "../pages/Search";
 import { FavoritesList } from "../component/dashboard/FavoritesList";
 import { GamificationHub } from "../component/dashboard/GamificationHub";
-import { UploadFile } from "../component/dashboard/UploadFile"
+import { UploadFile } from "../component/dashboard/UploadFile";
 
 export const Dashboard = () => {
   const { store, actions } = useContext(Context);
@@ -103,6 +104,16 @@ export const Dashboard = () => {
     }
   };
 
+  // Simulación de documentos en el dashboard (Reemplazar con datos reales si los tienes)
+  const documents = [
+    { id: 1, title: "React Basics", type: "Article" },
+    { id: 2, title: "Advanced JavaScript", type: "Video" },
+    { id: 3, title: "CSS Tricks", type: "Blog Post" },
+  ];
+
+  // Verifica si un documento ya está en favoritos
+  const isFavorite = (id) => store.favorites.some((fav) => fav.id === id);
+
   return (
     <Box sx={{ display: "flex", height: "100vh", background: "linear-gradient(45deg, #ff9a8b, #ff6a88, #ff99ac)" }}>
       {/* Botón para abrir/cerrar Sidebar */}
@@ -124,103 +135,44 @@ export const Dashboard = () => {
         {isSidebarOpen ? <CloseIcon /> : <MenuIcon />}
       </IconButton>
 
-      {/* Sidebar */}
-      <motion.div
-        initial={{ x: -250 }}
-        animate={{ x: isSidebarOpen ? 0 : -260 }}
-        transition={{ duration: 0.3 }}
-        style={{
-          width: "250px",
-          height: "100%",
-          background: "#1e1e2e",
-          color: "white",
-          display: "flex",
-          flexDirection: "column",
-          padding: "20px",
-          boxShadow: "3px 0 10px rgba(0, 0, 0, 0.2)",
-          position: "fixed",
-          left: isSidebarOpen ? 0 : -250,
-          top: 0,
-          transition: "left 0.3s ease-in-out",
-        }}
-      >
-        {/* Perfil del Usuario */}
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mt: 4 }}>
-          <Avatar src={userData?.avatar || "https://randomuser.me/api/portraits/men/45.jpg"} sx={{ width: 80, height: 80, mb: 2 }} />
-          <Typography variant="h6">{userData?.username || "No Name"}</Typography>
-          <Typography variant="body2">{userData?.email || "No Email"}</Typography>
-
-          {/* Botón para Editar Perfil */}
-          <Button
-            startIcon={<EditIcon />}
-            onClick={handleOpenModal}
-            sx={{ color: "white", mt: 2, background: "#ff6a88", ":hover": { background: "#e85c7b" } }}
-          >
-            Edit Profile
-          </Button>
-        </Box>
-
-        <Divider sx={{ backgroundColor: "#444", my: 3 }} />
-
-        {/* Botón Back to Dashboard */}
-        <Button startIcon={<DashboardIcon />} onClick={() => navigate("/dashboard")} sx={{ color: "white", justifyContent: "flex-start", mt: 1 }}>
-          Back to Dashboard
-        </Button>
-
-        {/* Botones de Navegación */}
-        <Button startIcon={<SearchIcon />} onClick={() => navigate("/dashboard/search")} sx={{ color: "white", justifyContent: "flex-start", mt: 1 }}>
-          Search Resources
-        </Button>
-        <Button startIcon={<UploadIcon />} onClick={() => navigate("/dashboard/upload")} sx={{ color: "white", justifyContent: "flex-start", mt: 1 }}>
-          Upload Resources
-        </Button>
-        <Button startIcon={<FavoriteIcon />} onClick={() => navigate("/dashboard/favorites")} sx={{ color: "white", justifyContent: "flex-start", mt: 1 }}>
-          Favorites
-        </Button>
-      </motion.div>
-      <Modal open={openModal} onClose={handleCloseModal}>
-        <Box sx={{ width: 400, bgcolor: "white", p: 4, borderRadius: "10px", mx: "auto", mt: "10%" }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>Edit Profile</Typography>
-          <TextField fullWidth label="Username" name="username" value={userData?.username || ""} onChange={handleChange} sx={{ mb: 2 }} />
-          <TextField fullWidth label="Email" name="email" value={userData?.email || ""} onChange={handleChange} sx={{ mb: 2 }} />
-          <Button fullWidth variant="contained" onClick={handleUpdate} sx={{ background: "#ff6a88" }}>
-            Save Changes
-          </Button>
-        </Box>
-      </Modal>
-
       {/* Contenido Principal */}
-      <Box sx={{
-        flex: 1,
-        padding: "30px",
-        overflowY: "auto",
-        marginLeft: isSidebarOpen ? "250px" : "0px",
-        transition: "margin-left 0.3s ease-in-out"
-      }}>
+      <Box sx={{ flex: 1, padding: "30px", overflowY: "auto", marginLeft: isSidebarOpen ? "250px" : "0px", transition: "margin-left 0.3s ease-in-out" }}>
         {loading ? <CircularProgress /> : (
           <>
             <Typography variant="h4" sx={{ fontWeight: "bold", color: "#fff" }}>
               Welcome, {userData?.username || "Loading..."}!
             </Typography>
 
-            {/* Aquí se definen las rutas dentro del Dashboard */}
-            <Routes>
-              {/* Vista por defecto: Gamificación y Favoritos */}
-              <Route path="/" element={
-                <Box sx={{ display: "flex", gap: 2, mt: 4 }}>
-                  <Box sx={{ background: "#fff", padding: "20px", borderRadius: "12px", flex: 1 }}>
-                  <GamificationHub userId={userId} />
-                  </Box>
-                  <Box sx={{ background: "#fff", padding: "20px", borderRadius: "12px", flex: 1 }}>
-                    <FavoritesList />
-                  </Box>
-                </Box>
-              } />
+            {/* Sección de Documentos en el Dashboard */}
+            <Box sx={{ display: "flex", gap: 2, flexDirection: "column", marginTop: 4 }}>
+              {documents.map((doc) => (
+                <Box key={doc.id} sx={{ background: "#fff", padding: "20px", borderRadius: "12px", boxShadow: 3 }}>
+                  <Typography variant="h6">{doc.title}</Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Type: {doc.type}
+                  </Typography>
 
-              {/* Nueva vista de búsqueda dentro del Dashboard */}
+                  {/* Botón de Favoritos */}
+                  <Button
+                    variant="contained"
+                    color={isFavorite(doc.id) ? "error" : "primary"}
+                    onClick={() => {
+                      isFavorite(doc.id) ? actions.removeFavorite(doc.id) : actions.addFavorite(doc);
+                    }}
+                    startIcon={isFavorite(doc.id) ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                    sx={{ marginTop: 1 }}
+                  >
+                    {isFavorite(doc.id) ? "Remove from Favorites" : "Add to Favorites"}
+                  </Button>
+                </Box>
+              ))}
+            </Box>
+
+            {/* Rutas dentro del Dashboard */}
+            <Routes>
               <Route path="/search" element={<Search />} />
               <Route path="/upload" element={<UploadFile />} />
-              <Route path="/Favorites" element={<FavoritesList />} />
+              <Route path="/favorites" element={<FavoritesList />} />
             </Routes>
           </>
         )}
@@ -228,3 +180,4 @@ export const Dashboard = () => {
     </Box>
   );
 };
+
