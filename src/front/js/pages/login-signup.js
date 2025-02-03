@@ -4,15 +4,11 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import { Google } from "@mui/icons-material";
 import "../../styles/Home/loginsignup.css";
 import { Context } from "../store/appContext";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { auth } from "../Firebase/Firebase";
 
 export const LoginSignUp = () => {
   const [isActive, setIsActive] = useState(false);
-
   const navigate = useNavigate();
   const { store, actions } = useContext(Context);
-
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -48,17 +44,13 @@ export const LoginSignUp = () => {
     navigate("/dashboard");
   };
 
+  
   const handleGoogleLogin = async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-
-      console.log("Usuario de Google:", result.user);
-
+    const { success, msg } = await actions.googleLogin();
+    if (success) {
       navigate("/dashboard");
-    } catch (error) {
-      console.error("Error al iniciar sesión con Google:", error);
-      setErrorMessage("Error logging in with Google");
+    } else {
+      setErrorMessage(msg || "Error al iniciar sesión con Google");
     }
   };
 
@@ -112,25 +104,18 @@ export const LoginSignUp = () => {
               component="h1"
               gutterBottom
               sx={{
-                background: 'linear-gradient(45deg, #ff9a8b, #ff6a88, #ff99ac)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                fontFamily: 'Poppins, sans-serif',
-                fontWeight: '500',
+                background: "linear-gradient(45deg, #ff9a8b, #ff6a88, #ff99ac)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                fontFamily: "Poppins, sans-serif",
+                fontWeight: "500",
                 margin: 0,
               }}
             >
               Join LearnVault
             </Typography>
-            <Box
-              className="social-icons"
-              sx={{ display: "flex", gap: 1, marginBottom: 0 }}
-            >
-              <Button
-                variant="outlined"
-                startIcon={<Google />}
-                onClick={handleGoogleLogin}
-              >
+            <Box className="social-icons" sx={{ display: "flex", gap: 1, marginBottom: 0 }}>
+              <Button variant="outlined" startIcon={<Google />} onClick={handleGoogleLogin}>
                 SignUp with Google
               </Button>
             </Box>
@@ -143,10 +128,10 @@ export const LoginSignUp = () => {
               margin="normal"
               name="username"
               sx={{
-                background: 'transparent',
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    border: 'none',
+                background: "transparent",
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    border: "none",
                   },
                 },
               }}
@@ -159,10 +144,10 @@ export const LoginSignUp = () => {
               margin="normal"
               name="email"
               sx={{
-                background: 'transparent',
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    border: 'none',
+                background: "transparent",
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    border: "none",
                   },
                 },
               }}
@@ -176,10 +161,10 @@ export const LoginSignUp = () => {
               margin="normal"
               name="password"
               sx={{
-                background: 'transparent',
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    border: 'none',
+                background: "transparent",
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    border: "none",
                   },
                 },
               }}
@@ -193,10 +178,10 @@ export const LoginSignUp = () => {
               margin="normal"
               name="confirmPassword"
               sx={{
-                background: 'transparent',
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    border: 'none',
+                background: "transparent",
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    border: "none",
                   },
                 },
               }}
@@ -221,22 +206,22 @@ export const LoginSignUp = () => {
 
         <div className="form-container sign-in">
           <form onSubmit={handleLogin}>
-            <Typography variant="h4" component="h1" gutterBottom 
-            sx={{
-              background: 'linear-gradient(45deg, #ff9a8b, #ff6a88, #ff99ac)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              fontFamily: 'Poppins, sans-serif',
-              fontWeight: '500',
-              margin: 0,
-            }}
-          >
+            <Typography
+              variant="h4"
+              component="h1"
+              gutterBottom
+              sx={{
+                background: "linear-gradient(45deg, #ff9a8b, #ff6a88, #ff99ac)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                fontFamily: "Poppins, sans-serif",
+                fontWeight: "500",
+                margin: 0,
+              }}
+            >
               Login
             </Typography>
-            <Box
-              className="social-icons"
-              sx={{ display: "flex", marginBottom: 1 }}
-            >
+            <Box className="social-icons" sx={{ display: "flex", marginBottom: 1 }}>
               <Button
                 variant="outlined"
                 startIcon={<Google />}
@@ -256,10 +241,10 @@ export const LoginSignUp = () => {
               margin="normal"
               name="email"
               sx={{
-                background: 'transparent',
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    border: 'none',
+                background: "transparent",
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    border: "none",
                   },
                 },
               }}
@@ -273,10 +258,10 @@ export const LoginSignUp = () => {
               margin="normal"
               name="password"
               sx={{
-                background: 'transparent',
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    border: 'none',
+                background: "transparent",
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    border: "none",
                   },
                 },
               }}
@@ -306,7 +291,7 @@ export const LoginSignUp = () => {
                 className="hidden"
                 onClick={handleLoginClick}
                 variant="contained"
-                sx={{background: 'transparent !important'}}
+                sx={{ background: "transparent !important" }}
               >
                 Sign In
               </Button>
@@ -322,7 +307,7 @@ export const LoginSignUp = () => {
                 className="hidden"
                 onClick={handleRegisterClick}
                 variant="contained"
-                sx={{background: 'transparent !important'}}
+                sx={{ background: "transparent !important" }}
               >
                 Sign Up
               </Button>

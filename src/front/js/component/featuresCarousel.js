@@ -61,12 +61,14 @@ export const FeaturesCarousel = () => {
     <Box
       sx={{
         position: "relative",
-        width: "100%",
+        width: "100vw", // ✅ Se asegura de ocupar todo el ancho del viewport
+        maxWidth: "100%", // ✅ Evita márgenes blancos en tamaños intermedios
         height: "100vh",
         overflow: "hidden",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        background: "linear-gradient(to right, #ff9a8b, #ff6a88)", // Ajusta si es necesario
       }}
     >
       <Box
@@ -96,68 +98,62 @@ export const FeaturesCarousel = () => {
                 position: "relative",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "space-between",
+                flexDirection: { xs: "column", md: "row" }, // 📌 Apila en móviles
+                justifyContent: "center",
                 background: feature.gradient,
-                padding: "5%",
+                padding: { xs: "8%", md: "5%" }, // 📌 Ajuste de padding en móviles
                 boxSizing: "border-box",
+                textAlign: "center",
               }}
             >
+              {/* Título flotante */}
               <Typography
                 variant="h1"
                 sx={{
                   position: "absolute",
-                  top: "15%",
-                  left: "45%",
-                  transform: "translate(-50%, -50%)",
-                  fontSize: { xs: "4rem", md: "12rem" },
+                  top: "10%",
+                  left: "30%",
+                  transform: "translateX(-50%)",
+                  fontSize: { xs: "2.5rem", md: "6rem" }, // 📌 Ajustado a móviles
                   fontWeight: "bold",
                   fontFamily: "'Poppins', sans-serif",
                   color: "rgba(255, 255, 255, 0)",
                   textTransform: "uppercase",
-                  letterSpacing: "10px",
+                  letterSpacing: "5px",
                   whiteSpace: "nowrap",
-                  WebkitTextStroke: "2px rgba(255, 255, 255, 0.65)",
+                  WebkitTextStroke: "1px rgba(255, 255, 255, 0.65)",
                   mixBlendMode: "overlay",
                   pointerEvents: "none",
                   animation: "breathEffect 4s ease-in-out infinite",
+
+                  display: { xs: "none", md: "block" }, // 📌 Oculto en pantallas pequeñas
                 }}
               >
                 Our Features
               </Typography>
-
+              {/* Estilos de animación */}
               <style>
                 {`
-    @keyframes breathEffect {
-      0% {
-        opacity: 0.5;
-        transform: translate(-50%, -50%) scale(1);
-        WebkitTextStroke: 2px rgba(255, 255, 255, 0.4);
-      }
-      50% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1.05); /* Pequeño crecimiento */
-        WebkitTextStroke: 2px rgba(255, 255, 255, 0.8);
-      }
-      100% {
-        opacity: 0.5;
-        transform: translate(-50%, -50%) scale(1);
-        WebkitTextStroke: 2px rgba(255, 255, 255, 0.4);
-      }
-    }
-  `}
+                  @keyframes breathEffect {
+                    0% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+                    50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+                    100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+                  }
+                `}
               </style>
+
+              {/* Texto y descripción */}
               <Box
                 sx={{
                   flex: "1",
-                  maxWidth: "40%",
+                  maxWidth: { xs: "100%", md: "40%" }, // 📌 Texto se expande en móviles
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
-                  textAlign: "left",
+                  textAlign: "center",
                   padding: "20px",
                   color: "#fff",
                   textShadow: "2px 2px 6px rgba(0, 0, 0, 0.7)",
-                  zIndex: 3,
                 }}
               >
                 <Typography
@@ -166,34 +162,38 @@ export const FeaturesCarousel = () => {
                     fontWeight: "bold",
                     fontFamily: "'Poppins', sans-serif",
                     mb: 2,
+                    fontSize: { xs: "1.5rem", md: "2.5rem" }, // 📌 Tamaño adaptable
                   }}
                 >
                   {feature.title}
                 </Typography>
                 <Typography
                   variant="body1"
-                  sx={{ fontFamily: "'Poppins', sans-serif" }}
+                  sx={{
+                    fontFamily: "'Poppins', sans-serif",
+                    fontSize: { xs: "1rem", md: "1.2rem" }, // 📌 Ajuste de fuente
+                  }}
                 >
                   {feature.description}
                 </Typography>
               </Box>
 
+              {/* Imagen */}
               <Box
                 sx={{
-                  position: "relative",
                   flex: "1",
-                  maxWidth: "50%",
+                  maxWidth: { xs: "80%", md: "50%" }, // 📌 Ajuste de imagen en móviles
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  zIndex: 4,
+                  mt: { xs: 3, md: 0 }, // 📌 Espaciado en móviles
                 }}
               >
                 <img
                   src={feature.image}
                   alt={feature.title}
                   style={{
-                    width: "80%",
+                    width: "100%",
                     height: "auto",
                     objectFit: "contain",
                   }}
@@ -204,37 +204,40 @@ export const FeaturesCarousel = () => {
         </Box>
       </Box>
 
+      {/* Botones de navegación */}
       <Button
         onClick={handlePrev}
         sx={{
           position: "absolute",
-          left: "20px",
+          left: "10px",
           top: "50%",
           transform: "translateY(-50%)",
           zIndex: 5,
-          minWidth: "40px",
-          minHeight: "40px",
+          minWidth: "30px",
+          minHeight: "30px",
           color: "#fff",
           "&:hover": { color: "#f1f1f1" },
+          fontSize: { xs: "1rem", md: "1.5rem" }, // 📌 Tamaño adaptable
         }}
       >
-        <ArrowBackIosIcon fontSize="large" />
+        <ArrowBackIosIcon />
       </Button>
       <Button
         onClick={handleNext}
         sx={{
           position: "absolute",
-          right: "20px",
+          right: "10px",
           top: "50%",
           transform: "translateY(-50%)",
           zIndex: 5,
-          minWidth: "40px",
-          minHeight: "40px",
+          minWidth: "30px",
+          minHeight: "30px",
           color: "#fff",
           "&:hover": { color: "#f1f1f1" },
+          fontSize: { xs: "1rem", md: "1.5rem" }, // 📌 Tamaño adaptable
         }}
       >
-        <ArrowForwardIosIcon fontSize="large" />
+        <ArrowForwardIosIcon />
       </Button>
     </Box>
   );

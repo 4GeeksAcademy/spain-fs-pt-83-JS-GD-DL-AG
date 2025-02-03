@@ -1,0 +1,121 @@
+/* 🌟 Importar fuente Poppins */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+
+/* 🌟 Estilos generales */
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: #f8f9fa;
+  margin: 0;
+  padding: 0;
+}
+
+/* 🌟 Contenedor principal */
+.kanban-container {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* 🌟 Título del Kanban */
+.kanban-title {
+  font-family: 'Poppins', sans-serif;
+  text-align: center;
+  font-weight: 600;
+  color: #e04a67;
+  font-size: 26px;
+  margin-bottom: 16px;
+}
+
+/* 🌟 Contenedor de columnas en versión PC (todas en una fila) */
+.kanban-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* ✅ Ajusta dinámicamente */
+  gap: 12px; /* ✅ Reduce el espacio entre columnas */
+  width: 100%;
+  max-width: 1200px;
+  padding: 16px;
+}
+
+/* 🌟 Columnas */
+.column {
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+  min-width: 200px; /* ✅ Asegura que las columnas sean compactas */
+}
+
+/* 🌟 Responsive: En móviles, las columnas estarán una debajo de otra */
+@media (max-width: 768px) {
+  .kanban-columns {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .column {
+    width: 90%;
+    max-width: 100%;
+  }
+}
+
+/* 🌟 Título de cada columna */
+.column-title {
+  text-align: center;
+  font-weight: 600;
+  color: #e04a67;
+  margin-bottom: 10px;
+}
+
+/* 🌟 Tarjeta de tarea */
+.task {
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+/* 🎯 Efecto hover en tareas */
+.task:hover {
+  transform: scale(1.03);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* 🎯 Mantener tamaño al arrastrar */
+.task.dragging {
+  opacity: 0.8;
+}
+
+/* 🎯 Botón de agregar tarea */
+.add-task-button {
+  background-color: #ff6584;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.add-task-button:hover {
+  background-color: #e04a67;
+}
+
+/* 🎯 Input para nueva tarea */
+.new-task-input {
+  background-color: white;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  padding: 8px;
+  width: 250px;
+}

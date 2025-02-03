@@ -10,18 +10,20 @@ export const Jumbotron = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        height: "100vh",
+        minHeight: "70vh", // 🔹 Reduce el tamaño en pantallas pequeñas
+        height: { xs: "auto", md: "100vh" }, // 🔹 Ajusta automáticamente en móviles
         overflow: "hidden",
         color: "white",
         textAlign: "center",
+        px: { xs: 2, sm: 4 }, // 🔹 Padding adaptable
       }}
     >
       {/* Fondo con animación de zoom */}
       <Box
         sx={{
           position: "absolute",
-          width: "120%",
-          height: "120%",
+          width: "100%",
+          height: "100%",
           backgroundImage: `url(${Jumbo})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
@@ -41,13 +43,14 @@ export const Jumbotron = () => {
       />
 
       {/* Contenido del Jumbotron */}
-      <Box sx={{ zIndex: 2, textAlign: "center", px: 2 }}>
+      <Box sx={{ zIndex: 2, textAlign: "center", maxWidth: "90vw" }}>
         <Typography
           variant="h2"
           sx={{
             fontWeight: "bold",
             fontFamily: "'Poppins', sans-serif",
             textShadow: "2px 2px 10px rgba(0,0,0,0.7)",
+            fontSize: { xs: "2rem", sm: "3rem", md: "4rem" }, // 🔹 Tamaño adaptable
           }}
         >
           LearnVault
@@ -59,7 +62,7 @@ export const Jumbotron = () => {
             mt: 2,
             maxWidth: "600px",
             mx: "auto",
-            fontSize: { xs: "1rem", sm: "1.2rem" },
+            fontSize: { xs: "0.9rem", sm: "1.1rem", md: "1.3rem" }, // 🔹 Ajusta en móviles
             textShadow: "1px 1px 5px rgba(0,0,0,0.5)",
           }}
         >
@@ -73,15 +76,9 @@ export const Jumbotron = () => {
       <style>
         {`
           @keyframes zoomEffect {
-            0% {
-              transform: scale(1);
-            }
-            50% {
-              transform: scale(1.2);
-            }
-            100% {
-              transform: scale(1);
-            }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
           }
         `}
       </style>

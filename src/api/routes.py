@@ -2,21 +2,81 @@
 # This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 # """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Documents, Favorites, Task, Leaderboard
+from api.models import db, User, Documents, Favorites, Task, Leaderboard, Badge, UserBadge, UserUploadBadge, UserFavoriteBadge
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 import os
+import firebase_admin
+from firebase_admin import auth, credentials
+from dotenv import load_dotenv
+
+load_dotenv()
+
+cred = credentials.Certificate({
+    "type": os.getenv("FIREBASE_TYPE"),
+    "project_id": os.getenv("FIREBASE_PROJECT_ID"),
+    "private_key_id": os.getenv("FIREBASE_PRIVATE_KEY_ID"),
+    "private_key": os.getenv("FIREBASE_PRIVATE_KEY").replace('\\n', '\n'),
+    "client_email": os.getenv("FIREBASE_CLIENT_EMAIL"),
+    "client_id": os.getenv("FIREBASE_CLIENT_ID"),
+    "auth_uri": os.getenv("FIREBASE_AUTH_URI"),
+    "token_uri": os.getenv("FIREBASE_TOKEN_URI"),
+    "auth_provider_x509_cert_url": os.getenv("FIREBASE_AUTH_PROVIDER_CERT_URL"),
+    "client_x509_cert_url": os.getenv("FIREBASE_CLIENT_CERT_URL")
+})
+
+firebase_admin.initialize_app(cred)
 
 api = Blueprint('api', __name__)
 CORS(api, resources={r"/*": {"origins": os.getenv("FRONT_URL"), "allow_headers": ["Authorization", "Content-Type"], "supports_credentials": True}})
 
 @api.after_request
 def add_cors_headers(response):
-    response.headers['Access-Control-Allow-Origin'] =  os.getenv("FRONT_URL")
+    response.headers['Access-Control-Allow-Origin'] = os.getenv("FRONT_URL")
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
     response.headers['Access-Control-Allow-Methods'] = 'GET,PUT,POST,DELETE'
+    response.headers['Access-Control-Allow-Credentials'] = 'true'  # Habilitar credenciales
     return response
+
+
+@api.route('/google-auth', methods=['POST'])
+def google_auth():
+    data = request.get_json()
+    id_token = data.get('token')
+
+    try:
+        decoded_token = auth.verify_id_token(id_token)
+        email = decoded_token['email']
+        username = decoded_token.get('name', email.split('@')[0])
+
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            user = User(
+                username=username,
+                email=email,
+                password="google_auth",
+                auth_method='google'
+            )
+            db.session.add(user)
+            db.session.commit()
+        elif user.auth_method != 'google':
+            return jsonify({'msg': 'Este email está registrado con otro método'}), 409
+
+        access_token = create_access_token(identity=str(user.id))
+        user_data = {
+            "id": user.id,
+            "email": user.email,
+            "username": user.username
+        }
+        return jsonify({
+            "token": access_token,
+            "user": user_data
+        }), 200
+
+    except Exception as e:
+        print("Error en Google Auth:", e)
+        return jsonify({"msg": "Autenticación fallida"}), 401
 
 ## CRUD Users:
 @api.route('/signup', methods=['POST'])
@@ -191,56 +251,56 @@ def login_user():
     email = body["email"]
     password = body["password"]
 
-    user = User.query.filter_by(email=email, password=password).first()  # Comparación directa
+    user = User.query.filter_by(email=email).first()
 
-    if user is None: 
+    if user and user.auth_method == 'google':
+        return jsonify({'msg': 'Usa Google para iniciar sesión'}), 400
+
+    if not user or user.password != password:
         return jsonify({'msg': 'Credenciales inválidas'}), 401
-
     # Convertir user.id a string antes de generar el token
-    token = create_access_token(identity=str(user.id))
+    token = create_access_token(identity=str(user.email))
+    user_data = {
+        "id": user.id,
+        "email": user.email,
+        "username": user.username
+    }
 
-    return jsonify({'msg': 'Inicio de sesión exitoso', 'token': token}), 200
-
+    return jsonify({
+        "msg": "Inicio de sesión exitoso",
+        "token": token,
+        "user": user_data
+    }), 200
 ## CRUD Documents:
 @api.route('/documents', methods=['POST'])
-def handle_create_document():
-    
-    body = request.get_json()
+def upload_document():
+    data = request.get_json()
 
-    if body is None:
-        return jsonify({'msg': 'Error'}), 400
-    if "title" not in body:
-        return jsonify({'msg': 'Title is required'}), 400
-    if "description" not in body:
-        return jsonify({'msg': 'Description is required'}), 400
-    if "type" not in body:
-        return jsonify({'msg': 'Type is required'}), 400
-    if "subject" not in body:
-        return jsonify({'msg': 'Subject is required'}), 400
-    if "src_url" not in body:
-        return jsonify({'msg': 'Url is required'}), 400
+    if not data.get("title") or not data.get("src_url"):
+        return jsonify({"error": "El título y la URL del archivo son obligatorios"}), 400
 
-    document = Documents(
-        title=body["title"],
-        description=body["description"],
-        type=body["type"],
-        subject=body["subject"],
-        src_url=body["src_url"]   
+    image_url = data.get("image_url") if data.get("image_url") else "https://e00-elmundo.uecdn.es/assets/multimedia/imagenes/2021/12/22/16401922123443.jpg"
+
+    new_document = Documents(
+        title=data["title"],
+        description=data.get("description", ""),
+        type=data["type"],
+        subject=data["subject"],
+        src_url=data["src_url"],
+        image_url=image_url,
+        uploaded_by=data.get("uploaded_by", "Unknown")
     )
-    
-    db.session.add(document)
+
+    db.session.add(new_document)
     db.session.commit()
 
-    return jsonify(document.serialize()), 201
+    return jsonify({"message": "Documento guardado correctamente", "document": new_document.serialize()}), 201
 
 
 @api.route('/documents', methods=['GET'])
-def handle_get_documents():
-    
-    all_documents = Documents.query.all()
-    all_documents = list(map(lambda x: x.serialize(), all_documents))
-
-    return jsonify(all_documents), 200
+def get_documents():
+    documents = Documents.query.all()
+    return jsonify([doc.serialize() for doc in documents]), 200
 
 
 @api.route('/document/<int:id>', methods=['GET'])
@@ -361,35 +421,46 @@ def delete_favorite(id):
 @api.route('/tasks', methods=['POST'])
 @jwt_required()
 def handle_create_task():
-    
-    body = request.get_json()
+    try:
+        print("✅ Recibida solicitud en /tasks")
+        
+        body = request.get_json()
+        if not body:
+            print("❌ Error: No se recibió JSON en la petición")
+            return jsonify({'msg': 'Error: No se recibió JSON'}), 400
 
-    if body is None:
-        return jsonify({'msg': 'Error'}), 400
-    if "name" not in body:
-        return jsonify({'msg': 'Name is required'}), 400
-    if "due_date" not in body:
-        return jsonify({'msg': 'Due date is required'}), 400
+        required_fields = ["name", "due_date"]
+        for field in required_fields:
+            if field not in body:
+                print(f"❌ Error: Falta el campo {field}")
+                return jsonify({'msg': f'{field} is required'}), 400
 
-    current_user_email = get_jwt_identity()
-    
-    user: User = User.query.filter_by(email=current_user_email).first()
+        current_user_email = get_jwt_identity()
+        print(f"🔍 Usuario autenticado: {current_user_email}")
 
-    if user is None:
-        return jsonify({'msg': 'User not found'}), 404
+        user = User.query.filter_by(email=current_user_email).first()
+        if user is None:
+            print("❌ Error: Usuario no encontrado")
+            return jsonify({'msg': f'User not found: {current_user_email}'}), 404
 
-    task = Task(
-        name=body["name"],
-        description=body["description"],
-        due_date=body["due_date"],
-        user_id=user.id
-    )
+        print("✅ Usuario encontrado, creando tarea...")
 
-    db.session.add(task)
-    db.session.commit()
+        task = Task(
+            name=body["name"],
+            description=body.get("description", ""),  # Si no hay descripción, usa ""
+            due_date=body["due_date"],
+            user_id=user.id
+        )
 
-    return jsonify(task.serialize()), 201
+        db.session.add(task)
+        db.session.commit()
+        print("✅ Tarea creada con éxito:", task.id)
 
+        return jsonify(task.serialize()), 201  # Asegurar que se devuelve la respuesta
+
+    except Exception as e:
+        print(f"🔥 Error interno: {str(e)}")
+        return jsonify({"msg": "Internal server error", "error": str(e)}), 500
 
 @api.route('/tasks', methods=['GET'])
 @jwt_required()
@@ -407,6 +478,38 @@ def handle_get_tasks():
     result = [task.serialize() for task in tasks]
 
     return jsonify(result), 200
+
+@api.route('/tasks/order', methods=['PUT'])
+@jwt_required()
+def update_task_order():
+    data = request.get_json()
+
+    for task_data in data:
+        task = Task.query.get(task_data["id"])
+        if task:
+            task.order = task_data["order"]
+
+    db.session.commit()
+    return jsonify({"msg": "Task order updated"}), 200
+
+@api.route('/tasks/<int:task_id>', methods=['PUT'])
+@jwt_required()
+def update_task(task_id):
+    body = request.get_json()
+    new_status = body.get("status")
+
+    if not new_status:
+        return jsonify({"msg": "Missing status"}), 400
+
+    task = Task.query.get(task_id)
+
+    if not task:
+        return jsonify({"msg": "Task not found"}), 404
+
+    task.status = new_status
+    db.session.commit()
+
+    return jsonify({"msg": f"Task {task_id} updated", "status": task.status}), 200
 
 
 @api.route('/tasks/<int:id>', methods=['GET'])
@@ -501,7 +604,7 @@ def get_achievements():
         return jsonify({"error": "Error interno", "message": str(e)}), 500
     
 # ------------------- USER PROGRESS -------------------
-@api.route("/api/user/<int:user_id>", methods=["GET"])
+@api.route("/user/<int:user_id>", methods=["GET"])
 def get_user_progress(user_id):
     user = User.query.get(user_id)
     if not user:
@@ -509,7 +612,7 @@ def get_user_progress(user_id):
     return jsonify(user.to_dict())
 
 # ------------------- BADGES -------------------
-@api.route("/api/badges/<int:user_id>", methods=["GET"])
+@api.route("/badges/<int:user_id>", methods=["GET"])
 def get_badges(user_id):
     user = User.query.get(user_id)
     if not user:
@@ -580,6 +683,93 @@ def add_badge(user_id, badge_id):
     db.session.commit()
 
     return jsonify({"message": f"Badge '{badge.name}' added to user {user.username}"})
+
+# -------------------- GAMIFICACIÖN -------------------------
+@api.route("/user/<int:user_id>/complete_action", methods=["POST"])
+def complete_action(user_id):
+    data = request.get_json()
+    action = data.get("action")
+
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    xp_gained = 0
+    badge_unlocked = None
+
+    # 🔥 Asignación de XP basada en la acción
+    action_rewards = {
+        "upload_file": 50,
+        "download_file": 20,
+        "add_favorite": 20
+    }
+
+    xp_gained = action_rewards.get(action, 0)
+    user.experience += xp_gained
+
+    # 🔥 Desbloqueo de insignias
+    if action == "upload_file" and not UserBadge.query.filter_by(user_id=user.id, badge_id=1).first():
+        badge_unlocked = Badge.query.get(1)  # Primera contribución
+        new_badge = UserBadge(user_id=user.id, badge_id=badge_unlocked.id)
+        db.session.add(new_badge)
+
+    if action == "download_file" and user.download_count >= 10:
+        badge_unlocked = Badge.query.get(2)  # Explorador
+        new_badge = UserBadge(user_id=user.id, badge_id=badge_unlocked.id)
+        db.session.add(new_badge)
+        
+    if action == "add_favorite" and not UserBadge.query.filter_by(user_id=user.id, badge_id=3).first(): 
+        badge_unlocked = Badge.query.get(3)  
+        new_badge = UserBadge(user_id=user.id, badge_id=badge_unlocked.id)
+        db.session.add(new_badge)    
+        
+    # 🔥 Desbloqueo de insignias de UploadBadge (Basado en documentos subidos)
+    
+    upload_badge = UserUploadBadge.query.filter_by(user_id=user.id).first()  # Tomamos el primer UserUploadBadge del usuario
+    
+    if upload_badge.documents_uploaded >= 20 and not UserBadge.query.filter_by(user_id=user.id, badge_id=upload_badge.upload_badge.id).first():
+        badge_unlocked = upload_badge.upload_badge
+        new_badge = UserBadge(user_id=user.id, badge_id=badge_unlocked.id)
+        db.session.add(new_badge)
+        
+    elif upload_badge.documents_uploaded >= 10 and not UserBadge.query.filter_by(user_id=user.id, badge_id=upload_badge.upload_badge.id).first():
+        badge_unlocked = upload_badge.upload_badge
+        new_badge = UserBadge(user_id=user.id, badge_id=badge_unlocked.id)
+        db.session.add(new_badge)
+        
+    elif upload_badge.documents_uploaded >= 5 and not UserBadge.query.filter_by(user_id=user.id, badge_id=upload_badge.upload_badge.id).first():
+        badge_unlocked = upload_badge.upload_badge 
+        new_badge = UserBadge(user_id=user.id, badge_id=badge_unlocked.id)
+        db.session.add(new_badge)
+
+    # 🔥 Desbloqueo de insignias de FavoriteBadge (Basado en la cantidad de favoritos)
+    
+    favorite_badge = UserFavoriteBadge.query.filter_by(user_id=user.id).first()  # Tomamos el primer UserFavoriteBadge del usuario
+    
+    if favorite_badge.favorites_count >= 20 and not UserBadge.query.filter_by(user_id=user.id, badge_id=favorite_badge.favorite_badge.id).first():
+        badge_unlocked = favorite_badge.favorite_badge
+        new_badge = UserBadge(user_id=user.id, badge_id=badge_unlocked.id)
+        db.session.add(new_badge)
+        
+    elif favorite_badge.favorites_count >= 10 and not UserBadge.query.filter_by(user_id=user.id, badge_id=favorite_badge.favorite_badge.id).first():
+        badge_unlocked = favorite_badge.favorite_badge
+        new_badge = UserBadge(user_id=user.id, badge_id=badge_unlocked.id)
+        db.session.add(new_badge)
+        
+    elif favorite_badge.favorites_count >= 5 and not UserBadge.query.filter_by(user_id=user.id, badge_id=favorite_badge.favorite_badge.id).first():
+        badge_unlocked = favorite_badge.favorite_badge
+        new_badge = UserBadge(user_id=user.id, badge_id=badge_unlocked.id)
+        db.session.add(new_badge)
+        
+        
+    db.session.commit()
+
+    response = {"xp_gained": xp_gained, "new_experience": user.experience}
+    if badge_unlocked:
+        response["badge_unlocked"] = badge_unlocked.name
+
+    return jsonify(response), 200
+
 
 # ------------------- INIT DATABASE -------------------
 @api.route("/init_db", methods=["POST"])

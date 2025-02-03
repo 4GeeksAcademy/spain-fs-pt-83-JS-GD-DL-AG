@@ -7,10 +7,50 @@ export const FavoritesList = () => {
   // Acceder al estado global usando Context
   const { store, actions } = useContext(Context);
 
+<<<<<<< HEAD
   const { favorites } = store; // Extraer los favoritos del store
 
   return (
     <Card sx={{ width: "100%", p: 2, boxShadow: 3, borderRadius: 4, marginTop: 2 }}>
+=======
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const token = localStorage.getItem("token");
+  
+        if (!token) {
+          throw new Error("No hay token en localStorage.");
+        }
+  
+        const response = await fetch(`https://super-couscous-wr94q9xj47xgcgg9v-3001.app.github.dev/favorites`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+  
+        if (!response.ok) {
+          throw new Error(`Error en la API: ${response.status} ${response.statusText}`);
+        }
+  
+        const data = await response.json();
+        console.log("Respuesta API:", data); // 🔍 LOG IMPORTANTE
+        setFavorites(Array.isArray(data) ? data : []); // 🔹 Evita que se rompa el código si data no es un array
+      } catch (err) {
+        console.error("Error obteniendo favoritos:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchFavorites();
+  }, []);
+
+  return (
+    <Card sx={{ width: "100%", p: 2, boxShadow: 3, borderRadius: 4, marginTop: 2, boxShadow: "none" }}>
+>>>>>>> main
       <CardHeader title="Favorite Resources" sx={{ textAlign: "center", fontWeight: "bold" }} />
       <CardContent>
         {store.loading ? (

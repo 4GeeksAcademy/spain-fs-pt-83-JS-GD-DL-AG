@@ -9,7 +9,7 @@ export const Footer = () => {
   return (
     <Box
       sx={{
-        background: "linear-gradient(135deg,rgb(88, 85, 77),rgb(83, 79, 57),rgb(102, 91, 68))",
+        background: "#1e1e2e",
         borderTop: "1px solid rgba(255, 255, 255, 0.2)",
         boxShadow: "0px -4px 20px rgba(0, 0, 0, 0.7)",
         py: 3,
