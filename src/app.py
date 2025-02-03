@@ -97,25 +97,28 @@ def init_db_data():
                 )
         else:
             print("📌 El usuario ya tiene insignias asignadas.")
-    # Verificar y mostrar los datos en la base de datos
-    users = User.query.all()
-    badges = Badge.query.all()
-    leaderboard = Leaderboard.query.all()
 
-    print("📌 Usuarios en la base de datos:")
-    for user in users:
-        print(user.to_dict())
+        # Verificar y mostrar los datos en la base de datos
+        users = User.query.all()
+        badges = Badge.query.all()
+        leaderboard = Leaderboard.query.all()
 
-    print("📌 Insignias en la base de datos:")
-    for badge in badges:
-        print(badge.to_dict())
+        print("📌 Usuarios en la base de datos:")
+        for user in users:
+            print(user.to_dict())
 
-    print("📌 Ranking en la base de datos:")
-    for entry in leaderboard:
-        print(entry.to_dict())
-    # Ejecutar la inicialización de la base de datos
-    with app.app_context():
-        init_db_data()
+        print("📌 Insignias en la base de datos:")
+        for badge in badges:
+            print(badge.to_dict())
+
+        print("📌 Ranking en la base de datos:")
+        for entry in leaderboard:
+            print(entry.to_dict())
+
+
+# Ejecutar la inicialización de la base de datos
+with app.app_context():
+    init_db_data()
 
 
 # -------------------- 📌 Configuración de la API --------------------
