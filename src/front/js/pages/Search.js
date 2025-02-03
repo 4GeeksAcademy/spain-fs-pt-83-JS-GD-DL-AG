@@ -13,13 +13,14 @@ import {
   Select,
   MenuItem,
   Pagination,
-  InputLabel,
-  FormControl,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
 // API Flask URL
 const API_URL = `${process.env.REACT_APP_BACKEND_URL}/api/documents`;
+const FAVORITES_API_URL = `${process.env.REACT_APP_BACKEND_URL}/api/favorites`;
 
 export const Search = () => {
   const [documents, setDocuments] = useState([]);
@@ -29,27 +30,51 @@ export const Search = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [category, setCategory] = useState("All");
   const [subject, setSubject] = useState("All");
-  const [subjects, setSubjects] = useState([]); // Unique subjects from API
+  const [subjects, setSubjects] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6; // 3 per row, 2 rows
+  const itemsPerPage = 6;
 
-  // Fetch documents from API
+  // Estado para favoritos
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    const checkIfFavorite = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/favorites`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        const favorites = await response.json();
+        const isFav = favorites.some((fav) => fav.document_id === selectedDocument.id);
+        setIsFavorite(isFav);
+      } catch (error) {
+        console.error("Error checking favorite:", error);
+      }
+    };
+    if (selectedDocument) {
+      checkIfFavorite();
+    }
+  }, [selectedDocument]);
+
   useEffect(() => {
     fetch(API_URL)
       .then((response) => response.json())
       .then((data) => {
-        console.log("Documents received:", data);
         setDocuments(data);
         setFilteredDocuments(data);
 
-        // Extract unique subjects
+        // Extraer materias únicas
         const uniqueSubjects = [...new Set(data.map((doc) => doc.subject))];
         setSubjects(uniqueSubjects);
       })
       .catch((error) => console.error("Error loading documents:", error));
   }, []);
 
-  // Handle search and filters in real-time
   useEffect(() => {
     let filtered = documents;
 
@@ -68,29 +93,137 @@ export const Search = () => {
     }
 
     setFilteredDocuments(filtered);
-    setCurrentPage(1); // Reset to first page when filtering
+    setCurrentPage(1);
   }, [searchQuery, category, subject, documents]);
 
-  // Pagination: Get current page items
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredDocuments.slice(indexOfFirstItem, indexOfLastItem);
 
-  // Handle page change
+  const handleToggleFavorite = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!isFavorite) {
+        // ✅ Añadir a favoritos
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/favorites`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ documents_id: selectedDocument.id }),
+        });
+
+        if (!response.ok) throw new Error("Failed to add favorite");
+
+        setIsFavorite(true);
+      } else {
+        // ✅ Obtener el ID del favorito antes de eliminarlo
+        const favoriteResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/favorites`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!favoriteResponse.ok) throw new Error("Failed to fetch favorites");
+
+        const favorites = await favoriteResponse.json();
+        const favoriteToDelete = favorites.find((fav) => fav.document_id === selectedDocument.id);
+
+        if (!favoriteToDelete) throw new Error("Favorite not found");
+
+        // ✅ Eliminar el favorito usando su ID
+        const deleteResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/favorites/${favoriteToDelete.id}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!deleteResponse.ok) throw new Error("Failed to remove favorite");
+
+        setIsFavorite(false);
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+    }
+  };
+
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
-  // Open modal with selected document
   const handleOpenModal = (document) => {
     setSelectedDocument(document);
     setOpenModal(true);
+    checkIfFavorite(document.id); // Comprobar si es favorito
   };
 
-  // Close modal
   const handleCloseModal = () => {
     setOpenModal(false);
     setSelectedDocument(null);
+  };
+
+  // ✅ Función para añadir a favoritos
+  const handleAddFavorite = async () => {
+    if (!selectedDocument) return;
+
+    console.log("🛠️ Adding to favorites:", selectedDocument.id); // <-- Debug
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("❌ No authentication token found.");
+        return;
+      }
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/favorites`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ documents_id: selectedDocument.id }),
+      });
+
+      const data = await response.json();
+      console.log("🔍 Response from API:", data); // <-- Debug
+
+      if (response.ok) {
+        console.log("✅ Favorite added successfully:", data);
+      } else {
+        console.error("❌ Failed to add favorite:", data.msg);
+      }
+    } catch (error) {
+      console.error("🔥 Error adding favorite:", error);
+    }
+  };
+
+
+  // ✅ Verificar si el documento ya está en favoritos
+  const checkIfFavorite = async (documentId) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(FAVORITES_API_URL, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Error checking favorites");
+      }
+
+      const favorites = await response.json();
+      const isAlreadyFavorite = favorites.some((fav) => fav.document_id === documentId);
+      setIsFavorite(isAlreadyFavorite);
+    } catch (error) {
+      console.error("Error checking favorite:", error);
+    }
   };
 
   return (
@@ -99,9 +232,7 @@ export const Search = () => {
         📚 Available Resources
       </Typography>
 
-      {/* Search Bar & Filters */}
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3, gap: 2 }}>
-        {/* Search Bar */}
         <TextField
           label="Search by title"
           variant="outlined"
@@ -111,7 +242,6 @@ export const Search = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
 
-        {/* Filter by Type (without label) */}
         <Select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
@@ -123,7 +253,6 @@ export const Search = () => {
           <MenuItem value="Video">Videos</MenuItem>
         </Select>
 
-        {/* Filter by Subject (without label) */}
         <Select
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
@@ -139,7 +268,6 @@ export const Search = () => {
         </Select>
       </Box>
 
-      {/* Grid of Cards */}
       <Grid container spacing={3}>
         {currentItems.map((doc) => (
           <Grid item key={doc.id} xs={12} sm={6} md={4}>
@@ -160,23 +288,14 @@ export const Search = () => {
                 <Typography variant="subtitle2" color="primary" sx={{ mt: 1 }}>
                   📁 {doc.subject}
                 </Typography>
-                <Typography variant="subtitle2" sx={{ color: "gray", mt: 1 }}>
-                  👤 Uploaded by: {doc.uploaded_by || "Unknown"}
-                </Typography>
               </CardContent>
             </Card>
           </Grid>
         ))}
       </Grid>
 
-      {/* Pagination */}
       <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-        <Pagination
-          count={Math.ceil(filteredDocuments.length / itemsPerPage)}
-          page={currentPage}
-          onChange={handlePageChange}
-          color="primary"
-        />
+        <Pagination count={Math.ceil(filteredDocuments.length / itemsPerPage)} page={currentPage} onChange={handlePageChange} color="primary" />
       </Box>
 
       {/* Modal for Preview */}
@@ -215,7 +334,7 @@ export const Search = () => {
               <Typography variant="subtitle2" sx={{ color: "gray", mb: 2 }}>
                 👤 Uploaded by: {selectedDocument.uploaded_by || "Unknown"}
               </Typography>
-              <Box sx={{ display: "flex", justifyContent: "center" }}>
+              <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
                 <iframe
                   src={selectedDocument.src_url}
                   title={selectedDocument.title}
@@ -224,6 +343,28 @@ export const Search = () => {
                   style={{ border: "none" }}
                   allowFullScreen
                 ></iframe>
+              </Box>
+              <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+                <Button
+                  variant="contained"
+                  onClick={handleToggleFavorite}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    backgroundColor: isFavorite ? "#e85c7b" : "#ff6a88",
+                    color: "white",
+                    fontWeight: "bold",
+                    borderRadius: "8px",
+                    padding: "8px 16px",
+                    textTransform: "none",
+                    "&:hover": { backgroundColor: isFavorite ? "#d34b5f" : "#e85c7b" },
+                  }}
+                >
+                  {isFavorite ? <FavoriteIcon sx={{ fontSize: 20 }} /> : <FavoriteBorderIcon sx={{ fontSize: 20 }} />}
+                  {isFavorite ? "Remove Favorite" : "Add to Favorites"}
+                </Button>
               </Box>
             </>
           )}

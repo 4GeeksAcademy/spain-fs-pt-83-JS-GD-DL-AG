@@ -1,36 +1,38 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, CircularProgress, Alert, Button, Paper } from "@mui/material";
-import { OpenInNew } from "@mui/icons-material";
+import { 
+  Card, CardContent, CardHeader, Table, TableBody, TableCell, 
+  TableContainer, TableHead, TableRow, CircularProgress, Alert, 
+  Button, Paper, IconButton 
+} from "@mui/material";
+import { OpenInNew, Delete } from "@mui/icons-material";
 
 export const FavoritesList = () => {
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // 📌 Cargar favoritos desde la API
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
         const token = localStorage.getItem("token");
-  
-        if (!token) {
-          throw new Error("No hay token en localStorage.");
-        }
-  
-        const response = await fetch(`https://super-couscous-wr94q9xj47xgcgg9v-3001.app.github.dev/favorites`, {
+
+        if (!token) throw new Error("No hay token en localStorage.");
+
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/favorites`, {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         });
-  
-        if (!response.ok) {
-          throw new Error(`Error en la API: ${response.status} ${response.statusText}`);
-        }
-  
+
+        if (!response.ok) throw new Error(`Error en la API: ${response.status} ${response.statusText}`);
+
         const data = await response.json();
-        console.log("Respuesta API:", data); // 🔍 LOG IMPORTANTE
-        setFavorites(Array.isArray(data) ? data : []); // 🔹 Evita que se rompa el código si data no es un array
+        console.log("Respuesta API:", data);
+
+        setFavorites(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Error obteniendo favoritos:", err);
         setError(err.message);
@@ -38,12 +40,31 @@ export const FavoritesList = () => {
         setLoading(false);
       }
     };
-  
+
     fetchFavorites();
   }, []);
 
+  // 🗑️ Eliminar favorito
+  const handleDeleteFavorite = async (favoriteId) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/favorites/${favoriteId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) throw new Error("Error eliminando favorito");
+
+      // ❌ Filtrar el favorito eliminado
+      setFavorites((prevFavorites) => prevFavorites.filter((fav) => fav.id !== favoriteId));
+    } catch (error) {
+      console.error("Error eliminando favorito:", error);
+    }
+  };
+
   return (
-    <Card sx={{ width: "100%", p: 2, boxShadow: 3, borderRadius: 4, marginTop: 2, boxShadow: "none" }}>
+    <Card sx={{ width: "100%", p: 2, borderRadius: 4, marginTop: 2, boxShadow: 3 }}>
       <CardHeader title="Favorite Resources" sx={{ textAlign: "center", fontWeight: "bold" }} />
       <CardContent>
         {loading ? (
@@ -53,10 +74,10 @@ export const FavoritesList = () => {
         ) : error ? (
           <Alert severity="error">{error}</Alert>
         ) : favorites.length === 0 ? (
-          <Alert severity="info">You dont have any favorites yet.</Alert>
+          <Alert severity="info">You don't have any favorites yet.</Alert>
         ) : (
           <TableContainer component={Paper}>
-             {console.log("Datos recibidos en favorites:", favorites)}
+            {console.log("Datos recibidos en favorites:", favorites)}
             <Table>
               <TableHead>
                 <TableRow>
@@ -79,9 +100,16 @@ export const FavoritesList = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         startIcon={<OpenInNew />}
+                        sx={{ marginRight: "8px" }}
                       >
                         Open document
                       </Button>
+                      <IconButton 
+                        color="error" 
+                        onClick={() => handleDeleteFavorite(fav.id)}
+                      >
+                        <Delete />
+                      </IconButton>
                     </TableCell>
                   </TableRow>
                 ))}
