@@ -115,7 +115,6 @@ def init_db_data():
         for entry in leaderboard:
             print(entry.to_dict())
 
-
 # Ejecutar la inicialización de la base de datos
 with app.app_context():
     init_db_data()
