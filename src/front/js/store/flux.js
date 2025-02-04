@@ -1,5 +1,3 @@
-
-
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "../Firebase/Firebase";
 
@@ -21,20 +19,18 @@ const getState = ({ getStore, getActions, setStore }) => {
 			],
 			token: null,
 			errorMessage: null,
-			
 			user: null,
+			favorites: [] // 🔹 Aseguramos que siempre sea un array vacío al inicio
 		},
 		actions: {
-			
 			googleLogin: async () => {
 				try {
-					
 					const provider = new GoogleAuthProvider();
 					const result = await signInWithPopup(auth, provider);
 					const user = result.user;
 					const idToken = await user.getIdToken();
 					const response = await fetch(
-						`${process.env.BACKEND_URL}/api/google-auth`,
+						`${process.env.REACT_APP_BACKEND_URL}/api/google-auth`,
 						{
 							method: "POST",
 							headers: { "Content-Type": "application/json" },
@@ -52,7 +48,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 						return { success: false, msg: data.msg || "Error al iniciar sesión con Google" };
 					}
 
-					
 					localStorage.setItem("token", data.token);
 					localStorage.setItem("user", JSON.stringify(data.user));
 					setStore({ token: data.token, user: data.user, errorMessage: null });
@@ -65,10 +60,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
-			
 			login: async (email, password) => {
 				try {
-					const response = await fetch(process.env.BACKEND_URL + "/api/login", {
+					const response = await fetch(process.env.REACT_APP_BACKEND_URL + "/api/login", {
 						method: "POST",
 						headers: { "Content-Type": "application/json" },
 						body: JSON.stringify({ email, password }),
@@ -82,12 +76,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 						return false;
 					}
 
-					
 					setStore({ token: data.token, errorMessage: null });
 					localStorage.setItem("token", data.token);
 					localStorage.setItem("user", JSON.stringify(data.user));
 
-					
 					const decodedToken = JSON.parse(atob(data.token.split(".")[1]));
 					console.log("Decoded token:", decodedToken);
 
@@ -100,10 +92,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
-			
 			signup: async (username, email, password) => {
 				try {
-					const response = await fetch(process.env.BACKEND_URL + "/api/signup", {
+					const response = await fetch(process.env.REACT_APP_BACKEND_URL + "/api/signup", {
 						method: "POST",
 						headers: { "Content-Type": "application/json" },
 						body: JSON.stringify({ username, email, password }),
@@ -114,7 +105,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 						return { success: false, msg: data.msg || "Error registering user." };
 					}
 
-					
 					return { success: true, msg: "Registration successful!" };
 				} catch (error) {
 					console.error("Error connecting to the server:", error);
@@ -122,83 +112,90 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
-			
 			logout: () => {
-				setStore({ token: null, errorMessage: null });
+				setStore({ token: null, errorMessage: null, favorites: [] }); // 🔹 Limpiar favoritos al cerrar sesión
 				localStorage.removeItem("token");
+				localStorage.removeItem("favorites");
 			},
 
-			
-			getDashboardData: async () => {
+			// ✅ Nueva función para obtener la lista de favoritos del backend
+			getFavorites: async () => {
 				try {
 					const store = getStore();
-					const token = store.token;
+					const token = store.token || localStorage.getItem("token");
 
-					const response = await fetch(process.env.BACKEND_URL + "/api/login", {
+					if (!token) {
+						console.warn("⚠️ No token found, cannot fetch favorites.");
+						return;
+					}
+
+					const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/favorites`, {
 						method: "GET",
 						headers: {
 							Authorization: `Bearer ${token}`,
+							"Content-Type": "application/json",
 						},
 					});
-					if (!response.ok) {
-						throw new Error(`HTTP error! status: ${response.status}`);
-					}
+
 					const data = await response.json();
-					setStore({ dashboardMessage: data.message });
+
+					if (!response.ok) {
+						throw new Error(`Error fetching favorites: ${data.msg || "Unknown error"}`);
+					}
+
+					console.log("✔️ Respuesta API favoritos:", data);
+
+					// 🔹 Asegurar que siempre sea un array antes de guardar en el estado
+					setStore({ favorites: Array.isArray(data) ? data : [] });
+
+					// Guardamos los favoritos en localStorage para persistencia
+					localStorage.setItem("favorites", JSON.stringify(Array.isArray(data) ? data : []));
+
 				} catch (error) {
-					console.error("Error fetching dashboard data:", error);
+					console.error("🔥 Error cargando favoritos:", error);
+					setStore({ errorMessage: "Could not fetch favorites.", favorites: [] });
 				}
 			},
 
-			
-			getSearchData: async () => {
+			// ✅ Nueva función para eliminar un favorito
+			removeFavorite: async (favId) => {
 				try {
 					const store = getStore();
-					const token = store.token;
+					const token = store.token || localStorage.getItem("token");
 
-					const response = await fetch(process.env.BACKEND_URL + "/api/search", {
-						method: "GET",
+					if (!token) {
+						console.warn("⚠️ No token found, cannot remove favorite.");
+						return;
+					}
+
+					const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/favorites/${favId}`, {
+						method: "DELETE",
 						headers: {
 							Authorization: `Bearer ${token}`,
+							"Content-Type": "application/json",
 						},
 					});
+
 					if (!response.ok) {
-						throw new Error(`HTTP error! status: ${response.status}`);
+						throw new Error(`Error removing favorite: ${response.status}`);
 					}
-					const data = await response.json();
-					setStore({ searchMessage: data.message });
+
+					console.log("🗑️ Favorito eliminado correctamente");
+
+					// 🔹 Filtramos el favorito eliminado del store
+					setStore({ favorites: store.favorites.filter(fav => fav.id !== favId) });
+
+					// Actualizamos localStorage
+					localStorage.setItem("favorites", JSON.stringify(store.favorites.filter(fav => fav.id !== favId)));
+
 				} catch (error) {
-					console.error("Error fetching search data:", error);
+					console.error("🔥 Error eliminando favorito:", error);
 				}
-			},
-
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
-			},
-
-			
-			getMessage: async () => {
-				try {
-					const resp = await fetch(process.env.BACKEND_URL + "/api/hello");
-					const data = await resp.json();
-					setStore({ message: data.message });
-					return data;
-				} catch (error) {
-					console.log("Error loading message from backend", error);
-				}
-			},
-
-			
-			changeColor: (index, color) => {
-				const store = getStore();
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
-				setStore({ demo: demo });
-			},
+			}
 		},
 	};
 };
 
 export default getState;
+
+
