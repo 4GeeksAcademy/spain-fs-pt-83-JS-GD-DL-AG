@@ -21,8 +21,8 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { TypingEffect } from "../component/dashboard/TypingEffect";
 
 // API Flask URL
-const API_URL = `${process.env.REACT_APP_BACKEND_URL}/api/documents`;
-const FAVORITES_API_URL = `${process.env.REACT_APP_BACKEND_URL}/api/favorites`;
+const API_URL = `${process.env.BACKEND_URL}/api/documents`;
+const FAVORITES_API_URL = `${process.env.BACKEND_URL}/api/favorites`;
 
 export const Search = () => {
   const [documents, setDocuments] = useState([]);
@@ -44,7 +44,7 @@ export const Search = () => {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/favorites`, {
+        const response = await fetch(`${process.env.BACKEND_URL}/api/favorites`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -68,7 +68,7 @@ export const Search = () => {
     const checkIfFavorite = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/favorites`, {
+        const response = await fetch(`${process.env.BACKEND_URL}/api/favorites`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -140,7 +140,7 @@ export const Search = () => {
       const isAlreadyFavorite = favorites.some((fav) => fav.document_id === doc.id);
 
       if (!isAlreadyFavorite) {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/favorites`, {
+        const response = await fetch(`${process.env.BACKEND_URL}/api/favorites`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -153,7 +153,7 @@ export const Search = () => {
 
         setFavorites((prev) => [...prev, { document_id: doc.id }]);
       } else {
-        const favoriteResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/favorites`, {
+        const favoriteResponse = await fetch(`${process.env.BACKEND_URL}/api/favorites`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -169,7 +169,7 @@ export const Search = () => {
           console.error("❌ Favorite not found for document:", doc.id);
           return;
         }
-        const deleteResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/favorites/${favoriteToDelete.id}`, {
+        const deleteResponse = await fetch(`${process.env.BACKEND_URL}/api/favorites/${favoriteToDelete.id}`, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -217,7 +217,7 @@ export const Search = () => {
         return;
       }
 
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/favorites`, {
+      const response = await fetch(`${process.env.BACKEND_URL}/api/favorites`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

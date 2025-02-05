@@ -52,7 +52,7 @@ export const GamificationHub = () => {
   const [badges, setBadges] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
 
-  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL; // 🔥 Obtiene el BACKEND_URL desde .env
+  const BACKEND_URL = process.env.BACKEND_URL; // 🔥 Obtiene el BACKEND_URL desde .env
   const token = localStorage.getItem("token"); // 🔥 Obtiene el token de autenticación
 
   useEffect(() => {
@@ -64,7 +64,7 @@ export const GamificationHub = () => {
     const fetchUserData = async () => {
       try {
         const res = await fetch(`${BACKEND_URL}/api/user/${userId}`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}`},
         });
         if (!res.ok) throw new Error(`Error ${res.status}`);
         setUserData(await res.json());
@@ -151,7 +151,6 @@ export const GamificationHub = () => {
       console.error("Error completing action:", error);
     }
   };
-
   return (
     <Box sx={{ padding: 3,}}>
       <Box sx={{ display: "flex", alignItems: "center", marginBottom: 2 }}>
@@ -163,32 +162,32 @@ export const GamificationHub = () => {
                 top: -75,
                 left: -30,
                 fontSize: 100,
-                color: "#ff6a88",
+                color: "#FF6A88",
                 transform: "rotate(-20deg)",
                 zIndex: 1000,
                 transition: "all 0.3s ease-in-out",
                 pointerEvents: "auto",
                 "&:hover": {
                   transform: "rotate(0deg) scale(1.1)",
-                  color: "#ff99ac",
+                  color: "#FF99AC",
                 },
               }}
             />
           )}
         </Box>
         <Box sx={{ flex: 1, textAlign: "center", paddingTop: "50px" }}>
-          <Typography variant="h4" fontWeight="bold" sx={{ color: "#ff6a88" }}>
+          <Typography variant="h4" fontWeight="bold" sx={{ color: "#FF6A88" }}>
             Level {isNaN(level) ? "0" : level}
           </Typography>
         </Box>
       </Box>
       <StyledLinearProgress variant="determinate" value={isNaN(progress) ? 0 : progress} />
-      <Typography variant="body1" sx={{ marginTop: 1, fontWeight: "bold", color: "#ff6a88 !important" }}>
+      <Typography variant="body1" sx={{ marginTop: 1, fontWeight: "bold", color: "#FF6A88 !important" }}>
         {experience} XP
       </Typography>
       <Box sx={{ marginTop: 4 }}>
-        <Typography variant="h5" fontWeight="bold" sx={{ display: "flex", alignItems: "center", marginBottom: 2, color: "#ff6a88" }}>
-          <EmojiEventsIcon sx={{ marginRight: 1, color: "#ff6a88" }} />
+        <Typography variant="h5" fontWeight="bold" sx={{ display: "flex", alignItems: "center", marginBottom: 2, color: "#FF6A88" }}>
+          <EmojiEventsIcon sx={{ marginRight: 1, color: "#FF6A88" }} />
           Badges
         </Typography>
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
@@ -205,24 +204,35 @@ export const GamificationHub = () => {
           )}
         </Box>
       </Box>
-
-      <Typography variant="h6" sx={{ marginTop: 3 }}>📊 Leaderboard</Typography>
-      <Grid container spacing={2}>
-        {leaderboard.length > 0 ? (
-          leaderboard.map((user, index) => (
-            <Grid item xs={12} key={index}>
-              <Card sx={{ display: "flex", justifyContent: "space-between", padding: 1, boxShadow: "none", background: "transparent" }}>
-                <CardContent>
-                  <Typography variant="body1">{index + 1}. {user.username}</Typography>
-                </CardContent>
-                <Typography variant="body2" sx={{ padding: 1 }}>{user.points} XP</Typography>
-              </Card>
-            </Grid>
-          ))
-        ) : (
-          <Typography variant="body2" sx={{ color: "gray", textAlign: "center" }}>No leaderboard data</Typography>
-        )}
-      </Grid>
+      <Box sx={{ marginTop: 4 }}>
+        <Box sx={{ display: "flex", alignItems: "center", marginBottom: 2, color: "#FF6A88" }}>
+          <LeaderboardIcon sx={{ marginRight: 1, color: "#FF6A88" }} />
+          <Typography variant="h5" fontWeight="bold">
+            LeaderBoard
+          </Typography>
+        </Box>
+        <Box sx={{ maxHeight: 300, overflow: "auto" }}>
+          {leaderboard.length > 0 ? (
+            leaderboard.map((user, index) => (
+              <LeaderboardCard key={index}>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <Typography variant="h6" sx={{ marginRight: 2, color: index < 3 ? "#FF6A88" : "inherit" }}>
+                    {index + 1}.
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: "#FF6A88" }}>{user.username}</Typography>
+                </Box>
+                <Typography variant="body2" fontWeight="bold" sx={{ color: "#FF6A88" }}>
+                  {user.points} XP
+                </Typography>
+              </LeaderboardCard>
+            ))
+          ) : (
+            <Typography variant="body2" sx={{ color: "#FF6A88", textAlign: "center" }}>
+              No leaderboard data
+            </Typography>
+          )}
+        </Box>
+      </Box>
     </Box>
-  );
-};
+  )
+}

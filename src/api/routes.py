@@ -64,7 +64,7 @@ def google_auth():
         elif user.auth_method != 'google':
             return jsonify({'msg': 'Este email está registrado con otro método'}), 409
 
-        access_token = create_access_token(identity=str(user.id))
+        access_token = create_access_token(identity=str(user.email))
         user_data = {
             "id": user.id,
             "email": user.email,
