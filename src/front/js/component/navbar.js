@@ -84,11 +84,26 @@ export const Navbar = () => {
             </Button>
           </Box>
           <IconButton
-            sx={{ display: { xs: "block", md: "none" }, color: "white" }}
+            sx={{
+              display: { xs: "block", md: "none" },
+              position: "fixed",
+              top: 20,
+              right: 30,
+              zIndex: 1300,
+              color: "white",
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+              padding: "8px",
+              borderRadius: "50%",
+              "@media (max-width: 480px)": {
+                right: 30,
+                top: 20,
+              },
+            }}
             onClick={() => toggleDrawer(true)}
           >
             <MenuIcon />
           </IconButton>
+
         </Toolbar>
       </AppBar>
       <Drawer anchor="right" open={drawerOpen} onClose={() => toggleDrawer(false)}>

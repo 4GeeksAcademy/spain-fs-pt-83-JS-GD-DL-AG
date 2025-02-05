@@ -227,37 +227,33 @@ export const Search = () => {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" sx={{ mb: 3, textAlign: "center" }}>
-        📚 Available Resources
+    <Box sx={{ p: 4, backgroundColor: "#e0e0e0", borderRadius: 2 }}>
+      <Typography variant="h4" sx={{ mb: 3, textAlign: "center", fontWeight: "bold" }}>
+        LEARNVAULT RESOURCES
       </Typography>
 
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3, gap: 2 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mb: 3 }}>
         <TextField
-          label="Search by title"
+          label="Search"
           variant="outlined"
           fullWidth
-          sx={{ backgroundColor: "white", borderRadius: 1 }}
+          sx={{ backgroundColor: "white", borderRadius: 2 }}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-
         <Select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          displayEmpty
-          sx={{ minWidth: 200, backgroundColor: "white", borderRadius: 1 }}
+          sx={{ backgroundColor: "white", borderRadius: 2, minWidth: 150 }}
         >
           <MenuItem value="All">All Types</MenuItem>
           <MenuItem value="Document">Documents</MenuItem>
           <MenuItem value="Video">Videos</MenuItem>
         </Select>
-
         <Select
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
-          displayEmpty
-          sx={{ minWidth: 200, backgroundColor: "white", borderRadius: 1 }}
+          sx={{ backgroundColor: "white", borderRadius: 2, minWidth: 150 }}
         >
           <MenuItem value="All">All Subjects</MenuItem>
           {subjects.map((subj, index) => (
@@ -268,26 +264,47 @@ export const Search = () => {
         </Select>
       </Box>
 
-      <Grid container spacing={3}>
-        {currentItems.map((doc) => (
+      <Grid container spacing={3} sx={{ justifyContent: "center" }}>
+        {filteredDocuments.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((doc) => (
           <Grid item key={doc.id} xs={12} sm={6} md={4}>
-            <Card sx={{ cursor: "pointer", boxShadow: 3, borderRadius: 2 }} onClick={() => handleOpenModal(doc)}>
+            <Card sx={{ borderRadius: 3, boxShadow: 3, backgroundColor: "white" }}>
               <CardMedia
                 component="img"
-                height="140"
+                height="150"
                 image={doc.image_url || "https://via.placeholder.com/150"}
+                sx={{ objectFit: "cover", borderRadius: "8px 8px 0 0", cursor: "pointer" }}
                 alt={doc.title}
+                onClick={() => handleOpenModal(doc)}
               />
               <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                <Typography variant="h6" fontWeight="bold">
                   {doc.title}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   {doc.description}
                 </Typography>
-                <Typography variant="subtitle2" color="primary" sx={{ mt: 1 }}>
-                  📁 {doc.subject}
-                </Typography>
+                <Button
+                  variant="contained"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    console.log("Favorite toggle");
+                  }}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    backgroundColor: "#ff6a88",
+                    color: "white",
+                    fontWeight: "bold",
+                    borderRadius: "8px",
+                    padding: "8px 16px",
+                    textTransform: "none",
+                    "&:hover": { backgroundColor: "#e85c7b" },
+                  }}
+                >
+                  <FavoriteBorderIcon sx={{ fontSize: 20 }} /> Add to Favorites
+                </Button>
               </CardContent>
             </Card>
           </Grid>
@@ -295,7 +312,12 @@ export const Search = () => {
       </Grid>
 
       <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-        <Pagination count={Math.ceil(filteredDocuments.length / itemsPerPage)} page={currentPage} onChange={handlePageChange} color="primary" />
+        <Pagination
+          count={Math.ceil(filteredDocuments.length / itemsPerPage)}
+          page={currentPage}
+          onChange={(e, value) => setCurrentPage(value)}
+          color="primary"
+        />
       </Box>
 
       {/* Modal for Preview */}
