@@ -81,21 +81,19 @@ export const GamificationHub = ({ userExperience }) => {
 
       const data = await response.json();
       console.log("XP Gained:", data.xp_gained);
-      if (data.badge_unlocked) {
-        console.log("New Badge:", data.badge_unlocked);
-      }
-
+      // 🔥 Verifica si se ha desbloqueado una nueva insginia y las actualiza
+      
       // 🔥 Actualiza el estado con la nueva experiencia del usuario
       setUserData(prevData => ({
         ...prevData,
         experience: data.new_experience
       }));
-
-      // 🔥 Verifica si se ha desbloqueado una nueva insginia y las actualiza
+            // 🔥 Verifica si se ha desbloqueado una nueva insginia y las actualiza
       if (data.badge_unlocked) {
         console.log("New Badge:", data.badge_unlocked);
         setBadges(prevBadges => [...prevBadges, data.badge_unlocked]);
       }
+
 
       // 🔥 Refrescar las insignias si se ha desbloqueado una nueva
       fetch(`${BACKEND_URL}/api/badges/${userId}`, {

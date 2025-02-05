@@ -14,7 +14,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import "../../../styles/Dashboard/kanbanBoard.css"
 
-const API_URL = "https://super-couscous-wr94q9xj47xgcgg9v-3001.app.github.dev/api";
+const API_URL = process.env.BACKEND_URL+"/api"
 
 const initialColumns = {
   tasks: { id: "tasks", title: "Tasks", tasks: [] },
