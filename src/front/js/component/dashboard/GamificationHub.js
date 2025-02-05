@@ -1,159 +1,234 @@
-import React, { useState, useEffect } from "react";
-import { Box, Typography, LinearProgress, Avatar, Tooltip, Grid, Card, CardContent } from "@mui/material";
+import React, { useState, useEffect } from "react"
+import { Box, Typography, LinearProgress, Avatar, Tooltip, Card } from "@mui/material"
+import { useMediaQuery, useTheme } from "@mui/material"
+import { styled } from "@mui/material/styles"
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents"
+import LeaderboardIcon from '@mui/icons-material/Leaderboard';
+import StarsIcon from "@mui/icons-material/Stars"
 
-export const GamificationHub = ({ userExperience }) => {
-  const storedUser = localStorage.getItem("user");
-  const user = storedUser ? JSON.parse(storedUser) : null;
-  const userId = user ? user.id : null;
+const StyledLinearProgress = styled(LinearProgress)(({ theme }) => ({
+  height: 10,
+  borderRadius: 5,
+  backgroundColor: theme.palette.grey[200],
+  "& .MuiLinearProgress-bar": {
+    borderRadius: 5,
+    background: "linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%)",
+  },
+}))
 
-  const [userData, setUserData] = useState(null);
-  const [badges, setBadges] = useState([]);
-  const [leaderboard, setLeaderboard] = useState([]);
+const BadgeAvatar = styled(Avatar, {
+  shouldForwardProp: (prop) => prop !== "unlocked",
+})(({ unlocked }) => ({
+  width: 50,
+  height: 50,
+  transition: "all 0.3s ease",
+  filter: unlocked ? "none" : "grayscale(100%) opacity(0.5)",
+  "&:hover": {
+    transform: "scale(1.1)",
+  },
+}))
 
-  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL; // 🔥 Obtiene el BACKEND_URL desde .env
-  const token = localStorage.getItem("token"); // 🔥 Obtiene el token de autenticación
+const LeaderboardCard = styled(Card)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  padding: theme.spacing(2),
+  boxShadow: "none",
+  background: "transparent",
+  borderBottom: `1px solid ${theme.palette.divider}`,
+  "&:last-child": {
+    borderBottom: "none",
+  },
+}))
+
+export const GamificationHub = () => {
+  const theme = useTheme()
+  const isMobile = useMediaQuery("(max-width: 900px)");
+  const storedUser = localStorage.getItem("user")
+  const user = storedUser ? JSON.parse(storedUser) : null
+  const userId = user ? user.id : null
+
+  const [userData, setUserData] = useState(null)
+  const [badges, setBadges] = useState([])
+  const [leaderboard, setLeaderboard] = useState([])
+
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL
+  const token = localStorage.getItem("token")
 
   useEffect(() => {
     if (!userId) {
-      console.error("User ID is undefined, cannot fetch data");
-      return;
+      console.error("User ID is undefined, cannot fetch data")
+      return
     }
 
     const fetchUserData = async () => {
       try {
         const res = await fetch(`${BACKEND_URL}/api/user/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error(`Error ${res.status}`);
-        setUserData(await res.json());
+        })
+        if (!res.ok) throw new Error(`Error ${res.status}`)
+        setUserData(await res.json())
       } catch (error) {
-        console.error("Error fetching user:", error);
+        console.error("Error fetching user:", error)
       }
-    };
+    }
 
     const fetchBadges = async () => {
       try {
         const res = await fetch(`${BACKEND_URL}/api/badges/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error(`Error ${res.status}`);
-        setBadges(await res.json());
+        })
+        if (!res.ok) throw new Error(`Error ${res.status}`)
+        setBadges(await res.json())
       } catch (error) {
-        console.error("Error fetching badges:", error);
+        console.error("Error fetching badges:", error)
       }
-    };
+    }
 
     const fetchLeaderboard = async () => {
       try {
         const res = await fetch(`${BACKEND_URL}/api/leaderboard`, {
           headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error(`Error ${res.status}`);
-        setLeaderboard(await res.json());
+        })
+        if (!res.ok) throw new Error(`Error ${res.status}`)
+        setLeaderboard(await res.json())
       } catch (error) {
-        console.error("Error fetching leaderboard:", error);
+        console.error("Error fetching leaderboard:", error)
       }
-    };
+    }
 
-    fetchUserData();
-    fetchBadges();
-    fetchLeaderboard();
-  }, [BACKEND_URL, userId, token]); // 🔹 Ahora depende de BACKEND_URL y el token
+    fetchUserData()
+    fetchBadges()
+    fetchLeaderboard()
+  }, [BACKEND_URL, userId, token])
 
-  if (!userData) return <Typography>Loading...</Typography>;
+  if (!userData) return <Typography>Loading...</Typography>
 
-  // 🔥 Aseguramos que experience nunca sea null o undefined
-  const experience = userData?.experience ?? 0;
-  const level = Math.floor(experience / 1000);
-  const progress = ((experience % 1000) / 1000) * 100;
+  const experience = userData?.experience ?? 0
+  const level = Math.floor(experience / 1000)
+  const progress = ((experience % 1000) / 1000) * 100
 
-  // ✅ Función para registrar acciones del usuario (subida de archivo, comentarios, etc.)
   const handleAction = async (action) => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/user/${userId}/complete_action`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ action })
-      });
+        body: JSON.stringify({ action }),
+      })
 
-      const data = await response.json();
-      console.log("XP Gained:", data.xp_gained);
-      // 🔥 Verifica si se ha desbloqueado una nueva insginia y las actualiza
-      
-      // 🔥 Actualiza el estado con la nueva experiencia del usuario
-      setUserData(prevData => ({
-        ...prevData,
-        experience: data.new_experience
-      }));
-            // 🔥 Verifica si se ha desbloqueado una nueva insginia y las actualiza
+      const data = await response.json()
+      console.log("XP Gained:", data.xp_gained)
       if (data.badge_unlocked) {
-        console.log("New Badge:", data.badge_unlocked);
-        setBadges(prevBadges => [...prevBadges, data.badge_unlocked]);
+        console.log("New Badge:", data.badge_unlocked)
       }
 
+      setUserData((prevData) => ({
+        ...prevData,
+        experience: data.new_experience,
+      }))
 
-      // 🔥 Refrescar las insignias si se ha desbloqueado una nueva
+      if (data.badge_unlocked) {
+        console.log("New Badge:", data.badge_unlocked)
+        setBadges((prevBadges) => [...prevBadges, data.badge_unlocked])
+      }
+
       fetch(`${BACKEND_URL}/api/badges/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
-        .then((res) => res.ok ? res.json() : Promise.reject(`Error ${res.status}`))
+        .then((res) => (res.ok ? res.json() : Promise.reject(`Error ${res.status}`)))
         .then(setBadges)
-        .catch((error) => console.error("Error fetching updated badges:", error));
-
+        .catch((error) => console.error("Error fetching updated badges:", error))
     } catch (error) {
-      console.error("Error completing action:", error);
+      console.error("Error completing action:", error)
     }
-  };
+  }
 
   return (
-    <Box sx={{ padding: 3, borderRadius: "16px",}}>
-      <Typography variant="h6">Level {isNaN(level) ? "0" : level}</Typography>
-      <LinearProgress
-        variant="determinate"
-        value={isNaN(progress) ? 0 : progress}
-        sx={{ height: 10, borderRadius: 5 }}
-      />
-      <Typography variant="body2">{experience} XP</Typography>
-
-      <Typography variant="h6" sx={{ marginTop: 3 }}>🎖️ Badges ({badges.length})</Typography>
-      <Box sx={{ display: "flex", gap: 2, marginTop: 1 }}>
-        {badges.length > 0 ? (
-          badges.map((badge, index) => (
-            <Tooltip key={index} title={badge.name}>
-              <Avatar
-                src={badge.icon}
-                sx={{
-                  filter: badge.unlocked ? "none" : "grayscale(100%) opacity(0.5)",
-                  cursor: "pointer"
-                }}
-              />
-            </Tooltip>
-          ))
-        ) : (
-          <Typography variant="body2" sx={{ color: "gray" }}>No badges yet</Typography>
-        )}
+    <Box sx={{ padding: 3,}}>
+      <Box sx={{ display: "flex", alignItems: "center", marginBottom: 2 }}>
+        <Box sx={{ position: "relative" }}>
+          {!isMobile && (
+            <StarsIcon
+              sx={{
+                position: "absolute",
+                top: -65,
+                left: -20,
+                fontSize: 100,
+                color: "#ff6a88",
+                transform: "rotate(-20deg)",
+                zIndex: 1000,
+                transition: "all 0.3s ease-in-out",
+                pointerEvents: "auto",
+                "&:hover": {
+                  transform: "rotate(0deg) scale(1.1)",
+                  color: "#ff99ac",
+                },
+              }}
+            />
+          )}
+        </Box>
+        <Box sx={{ flex: 1, textAlign: "center", paddingTop: "50px" }}>
+          <Typography variant="h4" fontWeight="bold" sx={{ color: "#ff6a88" }}>
+            Level {isNaN(level) ? "0" : level}
+          </Typography>
+        </Box>
+      </Box>
+      <StyledLinearProgress variant="determinate" value={isNaN(progress) ? 0 : progress} />
+      <Typography variant="body1" sx={{ marginTop: 1, fontWeight: "bold", color: "#ff6a88 !important" }}>
+        {experience} XP
+      </Typography>
+      <Box sx={{ marginTop: 4 }}>
+        <Typography variant="h5" fontWeight="bold" sx={{ display: "flex", alignItems: "center", marginBottom: 2, color: "#ff6a88" }}>
+          <EmojiEventsIcon sx={{ marginRight: 1, color: "#ff6a88" }} />
+          Badges
+        </Typography>
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+          {badges.length > 0 ? (
+            badges.map((badge, index) => (
+              <Tooltip key={index} title={badge.name}>
+                <BadgeAvatar src={badge.icon} unlocked={badge.unlocked} />
+              </Tooltip>
+            ))
+          ) : (
+            <Typography variant="body2" sx={{ color: "gray" }}>
+              No badges yet
+            </Typography>
+          )}
+        </Box>
       </Box>
 
-      <Typography variant="h6" sx={{ marginTop: 3 }}>📊 Leaderboard</Typography>
-      <Grid container spacing={2}>
-        {leaderboard.length > 0 ? (
-          leaderboard.map((user, index) => (
-            <Grid item xs={12} key={index}>
-              <Card sx={{ display: "flex", justifyContent: "space-between", padding: 1, boxShadow: "none", background: "transparent" }}>
-                <CardContent>
-                  <Typography variant="body1">{index + 1}. {user.username}</Typography>
-                </CardContent>
-                <Typography variant="body2" sx={{ padding: 1 }}>{user.points} XP</Typography>
-              </Card>
-            </Grid>
-          ))
-        ) : (
-          <Typography variant="body2" sx={{ color: "gray", textAlign: "center" }}>No leaderboard data</Typography>
-        )}
-      </Grid>
+      <Box sx={{ marginTop: 4 }}>
+        <Box sx={{ display: "flex", alignItems: "center", marginBottom: 2, color: "#ff6a88" }}>
+          <LeaderboardIcon sx={{ marginRight: 1, color: "#ff6a88" }} />
+          <Typography variant="h5" fontWeight="bold">
+            LeaderBoard
+          </Typography>
+        </Box>
+        <Box sx={{ maxHeight: 300, overflow: "auto" }}>
+          {leaderboard.length > 0 ? (
+            leaderboard.map((user, index) => (
+              <LeaderboardCard key={index}>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <Typography variant="h6" sx={{ marginRight: 2, color: index < 3 ? "#ff6a88" : "inherit" }}>
+                    {index + 1}.
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: "#ff6a88" }}>{user.username}</Typography>
+                </Box>
+                <Typography variant="body2" fontWeight="bold" sx={{ color: "#ff6a88" }}>
+                  {user.points} XP
+                </Typography>
+              </LeaderboardCard>
+            ))
+          ) : (
+            <Typography variant="body2" sx={{ color: "#ff6a88", textAlign: "center" }}>
+              No leaderboard data
+            </Typography>
+          )}
+        </Box>
+      </Box>
     </Box>
-  );
-};
+  )
+}

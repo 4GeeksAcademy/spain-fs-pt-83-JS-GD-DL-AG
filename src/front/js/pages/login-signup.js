@@ -116,13 +116,14 @@ export const LoginSignUp = () => {
             </Typography>
             <Box className="social-icons" sx={{ display: "flex", gap: 1, marginBottom: 0 }}>
               <Button variant="outlined" startIcon={<Google />} onClick={handleGoogleLogin}>
-                SignUp with Google
+              <span className="text">SignUp with Google</span>
               </Button>
             </Box>
-            <Typography variant="body2" gutterBottom>
+            <Typography className="option-text" variant="body2" gutterBottom>
               or use your email for registration
             </Typography>
             <TextField
+              className="form-input"
               fullWidth
               placeholder="Name"
               margin="normal"
@@ -139,6 +140,7 @@ export const LoginSignUp = () => {
               onChange={handleChange}
             />
             <TextField
+              className="form-input"
               fullWidth
               placeholder="Email"
               margin="normal"
@@ -155,6 +157,7 @@ export const LoginSignUp = () => {
               onChange={handleChange}
             />
             <TextField
+              className="form-input"
               fullWidth
               type="password"
               placeholder="Password"
@@ -172,6 +175,7 @@ export const LoginSignUp = () => {
               onChange={handleChange}
             />
             <TextField
+              className="form-input"
               fullWidth
               type="password"
               placeholder="Confirm Password"
@@ -198,7 +202,7 @@ export const LoginSignUp = () => {
                 {successMessage}
               </Typography>
             )}
-            <Button type="submit" variant="contained" fullWidth sx={{ marginTop: 2 }}>
+            <Button className= "signup-button" type="submit" variant="contained" fullWidth sx={{ marginTop: 2 }}>
               Sign Up
             </Button>
           </form>
@@ -229,7 +233,7 @@ export const LoginSignUp = () => {
                 fullWidth
                 sx={{ marginTop: "15px" }}
               >
-                Sign in with Google
+                <span className="text">SignIn with Google</span>
               </Button>
             </Box>
             <Typography variant="body2" gutterBottom>
@@ -273,7 +277,7 @@ export const LoginSignUp = () => {
             </Button>
           </form>
           {errorMessage && (
-            <Typography color="error" sx={{ marginTop: 2 }}>
+            <Typography className="error" color="error" sx={{ marginTop: 2 }}>
               {errorMessage}
             </Typography>
           )}

@@ -15,6 +15,7 @@ import AddIcon from "@mui/icons-material/Add";
 import "../../../styles/Dashboard/kanbanBoard.css"
 
 const API_URL = process.env.BACKEND_URL+"/api"
+const API_URL = process.env.BACKEND_URL + "/api";
 
 const initialColumns = {
   tasks: { id: "tasks", title: "Tasks", tasks: [] },
@@ -31,7 +32,9 @@ export const KanbanBoard = () => {
   const [error, setError] = useState(null);
 
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const taskColors = ["#fc8591", "#8ddd90", "#86bfee", "#ff9a8b", "#ff6a88", "#ff99ac"];
+  const getRandomColor = () => taskColors[Math.floor(Math.random() * taskColors.length)];
 
   useEffect(() => {
     loadTasks();
@@ -45,7 +48,7 @@ export const KanbanBoard = () => {
         setError("No authentication token found. Please log in.");
         return;
       }
-  
+
       const response = await fetch(`${API_URL}/tasks`, {
         method: "GET",
         headers: {
@@ -54,16 +57,16 @@ export const KanbanBoard = () => {
         },
         credentials: "include",
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.msg || "Failed to fetch tasks");
       }
-  
+
       const tasks = await response.json();
-  
+
       console.log("📌 Tareas obtenidas del backend:", tasks); // Debug
-  
+
       // Crear un nuevo objeto para actualizar el estado
       const updatedColumns = {
         tasks: { id: "tasks", title: "Tasks", tasks: [] },
@@ -72,21 +75,20 @@ export const KanbanBoard = () => {
         nextWeek: { id: "nextWeek", title: "Next Week", tasks: [] },
         thisMonth: { id: "thisMonth", title: "This Month", tasks: [] },
       };
-  
+
       // Asignar tareas a las columnas correctas
       tasks.forEach((task) => {
-        const columnId = task.status; // Ya viene con el status correcto del backend
-  
+        const columnId = task.status;
         if (updatedColumns[columnId]) {
-          updatedColumns[columnId].tasks.push(task);
+          updatedColumns[columnId].tasks.push({ ...task, color: task.color || getRandomColor() });
         } else {
-          console.warn(`⚠️ Columna desconocida: ${columnId}. Se asignará a "tasks"`);
-          updatedColumns["tasks"].tasks.push(task);
+          updatedColumns["tasks"].tasks.push({ ...task, color: task.color || getRandomColor() });
         }
       });
-  
+
+
       console.log("✅ Columnas actualizadas antes de renderizar:", updatedColumns);
-  
+
       setColumns(updatedColumns);
     } catch (err) {
       console.error("❌ Error loading tasks:", err);
@@ -109,9 +111,9 @@ export const KanbanBoard = () => {
           tasks.map((task, index) => ({ id: task.id, order: index }))
         ),
       });
-  
+
       if (!response.ok) throw new Error("Failed to update task order");
-  
+
     } catch (err) {
       console.error("Error updating task order:", err);
     }
@@ -119,49 +121,49 @@ export const KanbanBoard = () => {
 
   const onDragEnd = (result) => {
     if (!result.destination) return;
-  
+
     const { source, destination } = result;
     const sourceColumn = columns[source.droppableId];
     const destColumn = columns[destination.droppableId];
-  
+
     // 🟢 Mismo grupo → Solo reordenar las tareas dentro de la misma columna
     if (source.droppableId === destination.droppableId) {
       const updatedTasks = Array.from(sourceColumn.tasks);
       const [movedTask] = updatedTasks.splice(source.index, 1);
       updatedTasks.splice(destination.index, 0, movedTask);
-  
+
       setColumns((prevColumns) => ({
         ...prevColumns,
         [source.droppableId]: { ...sourceColumn, tasks: updatedTasks },
       }));
-  
+
       // Opcional: Guardar el nuevo orden en la base de datos
       updateTaskOrder(updatedTasks);
-  
+
       return;
     }
-  
+
     // 🔵 Movimiento entre columnas
     const sourceTasks = [...sourceColumn.tasks];
     const destTasks = [...destColumn.tasks];
-  
+
     const [movedTask] = sourceTasks.splice(source.index, 1);
     movedTask.status = destination.droppableId;
     destTasks.splice(destination.index, 0, movedTask);
-  
+
     setColumns((prevColumns) => ({
       ...prevColumns,
       [source.droppableId]: { ...sourceColumn, tasks: sourceTasks },
       [destination.droppableId]: { ...destColumn, tasks: destTasks },
     }));
-  
+
     updateTaskStatus(movedTask.id, destination.droppableId);
-  };  
+  };
 
   const updateTaskStatus = async (taskId, newStatus) => {
     try {
       console.log(`🔄 Actualizando tarea ${taskId} a la columna: ${newStatus}`); // Debug
-  
+
       const response = await fetch(`${API_URL}/tasks/${taskId}`, {
         method: "PUT",
         headers: {
@@ -171,21 +173,21 @@ export const KanbanBoard = () => {
         credentials: "include",
         body: JSON.stringify({ status: newStatus }),
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         console.error("❌ Error en la API:", errorData);
         throw new Error("Failed to update task status");
       }
-  
+
       console.log(`✅ Tarea ${taskId} movida a ${newStatus}`);
-  
+
     } catch (err) {
       console.error("❌ Error actualizando tarea:", err);
       setError("Failed to update task status. Please try again.");
     }
   };
-  
+
 
   const addTask = async () => {
     if (newTask.trim() === "") return;
@@ -210,13 +212,16 @@ export const KanbanBoard = () => {
       if (!response.ok) throw new Error("Failed to create task");
 
       const createdTask = await response.json();
-      setColumns({
-        ...columns,
+      createdTask.color = getRandomColor();
+
+      setColumns((prevColumns) => ({
+        ...prevColumns,
         tasks: {
-          ...columns.tasks,
-          tasks: [...columns.tasks.tasks, createdTask],
+          ...prevColumns.tasks,
+          tasks: [...prevColumns.tasks.tasks, createdTask],
         },
-      });
+      }));
+
       setNewTask("");
     } catch (err) {
       console.error("Error adding task:", err);
@@ -233,11 +238,11 @@ export const KanbanBoard = () => {
         },
         credentials: "include",
       });
-  
+
       if (!response.ok) {
         throw new Error("Failed to delete task");
       }
-  
+
       // Actualizar el estado correctamente
       setColumns((prevColumns) => {
         const updatedColumns = { ...prevColumns };
@@ -246,12 +251,12 @@ export const KanbanBoard = () => {
         );
         return updatedColumns;
       });
-  
+
     } catch (err) {
       console.error("Error deleting task:", err);
       setError("Failed to delete task. Please try again.");
     }
-  };  
+  };
 
   if (loading) return <Typography>Loading...</Typography>;
 
@@ -259,15 +264,36 @@ export const KanbanBoard = () => {
     <div className="kanban-container">
       <h2 className="kanban-title">Organization Board</h2>
       {error && <Alert severity="error">{error}</Alert>}
-      <div style={{ display: "flex", justifyContent: "center", gap: "16px", marginBottom: "16px" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "16px",
+          marginBottom: "16px",
+        }}
+      >
         <TextField
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}
           placeholder="New task"
           size="small"
           className="new-task-input"
+          fullWidth={isMobile}
         />
-        <button className="add-task-button" onClick={addTask}>
+        <button
+          className="add-task-button"
+          onClick={addTask}
+          style={{
+            width: isMobile ? "100%" : "auto",
+            padding: isMobile ? "10px" : "8px 16px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "8px",
+          }}
+        >
           <AddIcon /> Add Task
         </button>
       </div>
@@ -282,16 +308,22 @@ export const KanbanBoard = () => {
                     <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
                       {(provided, snapshot) => (
                         <div
-                          ref={provided.innerRef}
+                          ref={(el) => {
+                            provided.innerRef(el);
+                            if (el) el.style.setProperty("background-color", task.color, "important");
+                          }}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
                           className={`task ${snapshot.isDragging ? "dragging" : ""}`}
                           style={{
                             ...provided.draggableProps.style,
                             opacity: snapshot.isDragging ? 0.8 : 1,
+                            padding: "10px",
+                            borderRadius: "8px",
+                            boxShadow: "0px 2px 4px rgba(0,0,0,0.2)",
                           }}
                         >
-                          <span>{task.name}</span>
+                          <Typography sx={{ fontWeight: "bold", color: "white", textShadow: "0px 2px 4px rgba(0,0,0,0.8)"}}>{task.name}</Typography>
                           <IconButton size="small" style={{ color: "#E53E3E" }} onClick={() => handleDeleteTask(column.id, task.id)}>
                             <DeleteIcon fontSize="small" />
                           </IconButton>
@@ -307,5 +339,5 @@ export const KanbanBoard = () => {
         </div>
       </DragDropContext>
     </div>
-  );  
+  );
 };
