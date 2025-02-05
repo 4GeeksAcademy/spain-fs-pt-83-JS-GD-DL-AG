@@ -11,6 +11,7 @@ class User(db.Model):
     email = db.Column(db.String(100), nullable=False, unique=True)  
     password = db.Column(db.String(250), nullable=False) 
     auth_method = db.Column(db.String(20), default='email')
+    avatar = db.Column(db.String(500), nullable=True, default="https://images.squarespace-cdn.com/content/v1/54b7b93ce4b0a3e130d5d232/1519986430884-H1GYNRLHN0VFRF6W5TAN/icon.png?format=750w")
     
     favorites = db.relationship('Favorites', back_populates='user')
     tasks = db.relationship('Task', back_populates='user')
@@ -37,7 +38,8 @@ class User(db.Model):
         return {
             "id": self.id,
             "username": self.username,
-            "email": self.email
+            "email": self.email,
+            "avatar": self.avatar
         }
 
 

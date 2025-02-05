@@ -1,10 +1,52 @@
-import React, { useState, useEffect } from "react";
-import { Box, Typography, LinearProgress, Avatar, Tooltip, Grid, Card, CardContent } from "@mui/material";
+import React, { useState, useEffect } from "react"
+import { Box, Typography, LinearProgress, Avatar, Tooltip, Card } from "@mui/material"
+import { useMediaQuery, useTheme } from "@mui/material"
+import { styled } from "@mui/material/styles"
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents"
+import LeaderboardIcon from '@mui/icons-material/Leaderboard';
+import StarsIcon from "@mui/icons-material/Stars"
 
-export const GamificationHub = ({ userExperience }) => {
-  const storedUser = localStorage.getItem("user");
-  const user = storedUser ? JSON.parse(storedUser) : null;
-  const userId = user ? user.id : null;
+const StyledLinearProgress = styled(LinearProgress)(({ theme }) => ({
+  height: 10,
+  borderRadius: 5,
+  backgroundColor: theme.palette.grey[200],
+  "& .MuiLinearProgress-bar": {
+    borderRadius: 5,
+    background: "linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%)",
+  },
+}))
+
+const BadgeAvatar = styled(Avatar, {
+  shouldForwardProp: (prop) => prop !== "unlocked",
+})(({ unlocked }) => ({
+  width: 50,
+  height: 50,
+  transition: "all 0.3s ease",
+  filter: unlocked ? "none" : "grayscale(100%) opacity(0.5)",
+  "&:hover": {
+    transform: "scale(1.1)",
+  },
+}))
+
+const LeaderboardCard = styled(Card)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  padding: theme.spacing(2),
+  boxShadow: "none",
+  background: "transparent",
+  borderBottom: `1px solid ${theme.palette.divider}`,
+  "&:last-child": {
+    borderBottom: "none",
+  },
+}))
+
+export const GamificationHub = () => {
+  const theme = useTheme()
+  const isMobile = useMediaQuery("(max-width: 1200px)");
+  const storedUser = localStorage.getItem("user")
+  const user = storedUser ? JSON.parse(storedUser) : null
+  const userId = user ? user.id : null
 
   const [userData, setUserData] = useState(null);
   const [badges, setBadges] = useState([]);
@@ -111,32 +153,57 @@ export const GamificationHub = ({ userExperience }) => {
   };
 
   return (
-    <Box sx={{ padding: 3, borderRadius: "16px",}}>
-      <Typography variant="h6">Level {isNaN(level) ? "0" : level}</Typography>
-      <LinearProgress
-        variant="determinate"
-        value={isNaN(progress) ? 0 : progress}
-        sx={{ height: 10, borderRadius: 5 }}
-      />
-      <Typography variant="body2">{experience} XP</Typography>
-
-      <Typography variant="h6" sx={{ marginTop: 3 }}>🎖️ Badges ({badges.length})</Typography>
-      <Box sx={{ display: "flex", gap: 2, marginTop: 1 }}>
-        {badges.length > 0 ? (
-          badges.map((badge, index) => (
-            <Tooltip key={index} title={badge.name}>
-              <Avatar
-                src={badge.icon}
-                sx={{
-                  filter: badge.unlocked ? "none" : "grayscale(100%) opacity(0.5)",
-                  cursor: "pointer"
-                }}
-              />
-            </Tooltip>
-          ))
-        ) : (
-          <Typography variant="body2" sx={{ color: "gray" }}>No badges yet</Typography>
-        )}
+    <Box sx={{ padding: 3,}}>
+      <Box sx={{ display: "flex", alignItems: "center", marginBottom: 2 }}>
+        <Box sx={{ position: "relative" }}>
+          {!isMobile && (
+            <StarsIcon
+              sx={{
+                position: "absolute",
+                top: -75,
+                left: -30,
+                fontSize: 100,
+                color: "#ff6a88",
+                transform: "rotate(-20deg)",
+                zIndex: 1000,
+                transition: "all 0.3s ease-in-out",
+                pointerEvents: "auto",
+                "&:hover": {
+                  transform: "rotate(0deg) scale(1.1)",
+                  color: "#ff99ac",
+                },
+              }}
+            />
+          )}
+        </Box>
+        <Box sx={{ flex: 1, textAlign: "center", paddingTop: "50px" }}>
+          <Typography variant="h4" fontWeight="bold" sx={{ color: "#ff6a88" }}>
+            Level {isNaN(level) ? "0" : level}
+          </Typography>
+        </Box>
+      </Box>
+      <StyledLinearProgress variant="determinate" value={isNaN(progress) ? 0 : progress} />
+      <Typography variant="body1" sx={{ marginTop: 1, fontWeight: "bold", color: "#ff6a88 !important" }}>
+        {experience} XP
+      </Typography>
+      <Box sx={{ marginTop: 4 }}>
+        <Typography variant="h5" fontWeight="bold" sx={{ display: "flex", alignItems: "center", marginBottom: 2, color: "#ff6a88" }}>
+          <EmojiEventsIcon sx={{ marginRight: 1, color: "#ff6a88" }} />
+          Badges
+        </Typography>
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+          {badges.length > 0 ? (
+            badges.map((badge, index) => (
+              <Tooltip key={index} title={badge.name}>
+                <BadgeAvatar src={badge.icon} unlocked={badge.unlocked} />
+              </Tooltip>
+            ))
+          ) : (
+            <Typography variant="body2" sx={{ color: "gray" }}>
+              No badges yet
+            </Typography>
+          )}
+        </Box>
       </Box>
 
       <Typography variant="h6" sx={{ marginTop: 3 }}>📊 Leaderboard</Typography>

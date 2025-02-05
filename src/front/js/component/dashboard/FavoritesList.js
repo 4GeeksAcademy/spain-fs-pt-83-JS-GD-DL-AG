@@ -3,13 +3,13 @@ import {
   Box,
   Card,
   CardContent,
-  CardHeader,
-  Table,
-  TableBody,
-  TableCell,
+  Divider,
+  List,
+  ListItem,
+  ListItemAvatar,
   TableContainer,
-  TableHead,
-  TableRow,
+  ListItemText,
+  Avatar,
   CircularProgress,
   Alert,
   Button,
@@ -20,8 +20,10 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { OpenInNew, Delete, Favorite } from "@mui/icons-material"
 import { styled } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   width: "100%",
@@ -40,8 +42,9 @@ const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
 }));
 
 export const FavoritesList = () => {
+  const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery("(max-width: 900px)");
+  const isMobile = useMediaQuery("(max-width: 1200px)");
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -88,7 +91,7 @@ export const FavoritesList = () => {
           <Favorite
             sx={{
               position: "absolute",
-              top: -5,
+              top: -25,
               left: -0,
               fontSize: 100,
               color: "#ff6a88",
@@ -105,12 +108,28 @@ export const FavoritesList = () => {
         )}
       </Box>
       <StyledCard>
-        <Box sx={{ flex: 1, textAlign: "center" }}>
+        <Box sx={{ flex: 1, textAlign: "center", overflow: "hidden", }}>
           <Typography variant="h5" fontWeight="bold" sx={{ color: "#ff6a88", paddingTop: "24px" }}>
             Favorite Resources
           </Typography>
         </Box>
-        <CardContent>
+        <CardContent
+          sx={{  mb: 0, pb: 0,
+            maxHeight: 400,
+            overflowY: "auto",
+            "&::-webkit-scrollbar": { width: 6 },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "rgba(255, 106, 136, 0.5)",
+              borderRadius: 3,
+            },
+            "&::-webkit-scrollbar-track": {
+              backgroundColor: "transparent",
+            },
+            "&:hover::-webkit-scrollbar-thumb": {
+              backgroundColor: "rgba(255, 106, 136, 0.8)",
+            },
+          }}
+        >
           {loading ? (
             <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: 200 }}>
               <CircularProgress />
@@ -120,61 +139,56 @@ export const FavoritesList = () => {
           ) : favorites.length === 0 ? (
             <Alert severity="info">You don't have any favorites yet.</Alert>
           ) : (
-            <StyledTableContainer component={Paper} elevation={0} sx={{ backgroundColor: "transparent" }}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>
-                      <Typography variant="subtitle1" sx={{ color: "#ff6a88" }}>
-                        <strong>Title</strong>
-                      </Typography>
-                    </TableCell>
-                    {!isMobile && (
-                      <TableCell>
-                        <Typography variant="subtitle1" sx={{ color: "#ff6a88" }}>
-                          <strong>Type</strong>
+            <List sx={{ width: "100%", bgcolor: "background.paper", borderRadius: 2, }}>
+              {favorites.map((fav, index) => (
+                <React.Fragment key={fav.id}>
+                  <ListItem
+                    secondaryAction={
+                      <IconButton
+                        edge="end"
+                        onClick={() => navigate("/dashboard/favorites")}
+                      >
+                        <ArrowForwardIosIcon />
+                      </IconButton>
+                    }
+                    sx={{
+                      borderRadius: 3,
+                      mb: 1,
+                      p: 1,
+                      boxShadow: 3,
+                      "&:hover": {
+                        backgroundColor: "#f8f8f8",
+                        transform: "scale(1.02)",
+                      },
+                      transition: "all 0.3s ease-in-out",
+                    }}
+                  >
+                    <ListItemAvatar>
+                      <Avatar
+                        src={fav.image_url || "https://e00-elmundo.uecdn.es/assets/multimedia/imagenes/2021/12/22/16401922123443.jpg"}
+                        sx={{ width: 48, height: 48, borderRadius: 1 }}
+                      />
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={
+                        <Typography variant="subtitle1" fontWeight="bold">
+                          {fav.document_title}
                         </Typography>
-                      </TableCell>
-                    )}
-                    <TableCell align="center">
-                      <Typography variant="subtitle1" sx={{ color: "#ff6a88" }}>
-                        <strong>Actions</strong>
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {favorites.map((fav) => (
-                    <TableRow key={fav.id}>
-                      <TableCell>{fav.document_title}</TableCell>
-                      {!isMobile && <TableCell>{fav.document_type}</TableCell>}
-                      <TableCell align="center">
-                        <Tooltip title="Open document">
-                          <Button
-                            variant="contained"
-                            size="small"
-                            href={`/document/${fav.document_id}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            startIcon={<OpenInNew />}
-                            sx={{ marginRight: "8px", backgroundColor: "#ff6a88", color: "white", "&:hover": { backgroundColor: "#ff99ac" } }}
-                          >
-                            Open
-                          </Button>
-                        </Tooltip>
-                        <Tooltip title="Remove from favorites">
-                          <IconButton color="error" onClick={() => handleDeleteFavorite(fav.id)}>
-                            <Delete />
-                          </IconButton>
-                        </Tooltip>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </StyledTableContainer>
+                      }
+                      secondary={
+                        <Typography variant="body2" color="text.secondary">
+                          {fav.document_type}
+                        </Typography>
+                      }
+                    />
+                  </ListItem>
+                  {index < favorites.length - 1 && <Divider sx={{ color: "transparent"}} />}
+                </React.Fragment>
+              ))}
+            </List>
           )}
         </CardContent>
+
       </StyledCard>
     </Box>
   );
