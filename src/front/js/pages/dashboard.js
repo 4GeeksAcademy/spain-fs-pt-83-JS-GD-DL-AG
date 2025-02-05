@@ -15,6 +15,8 @@ import {
 import { motion } from "framer-motion"
 import { Context } from "../store/appContext"
 import { useNavigate, Outlet, useLocation } from "react-router-dom"
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../Firebase/Firebase";
 import MenuIcon from "@mui/icons-material/Menu"
 import CloseIcon from "@mui/icons-material/Close"
 import SearchIcon from "@mui/icons-material/Search"
@@ -111,6 +113,42 @@ export const Dashboard = () => {
       console.error("🔥 Error updating user data:", error)
     }
   }
+  const handleAvatarChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+
+      const storageRef = ref(storage, `avatars/${file.name}`);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+
+      await updateAvatarInDB(downloadURL);
+
+      setUserData((prevUserData) => ({ ...prevUserData, avatar: downloadURL }));
+    } catch (error) {
+      console.error("❌ Error al cambiar el avatar:", error);
+    }
+  };
+
+  const updateAvatarInDB = async (avatarUrl) => {
+    try {
+      const response = await fetch(`${process.env.BACKEND_URL}/api/user/avatar`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${store.token}`,
+        },
+        body: JSON.stringify({ avatar_url: avatarUrl }),
+      });
+
+      if (!response.ok) throw new Error("Error al actualizar el avatar");
+
+      console.log("✅ Avatar actualizado en la BD");
+    } catch (error) {
+      console.error("❌ Error al actualizar el avatar en la BD:", error);
+    }
+  };
 
   return (
     <Box
@@ -200,15 +238,23 @@ export const Dashboard = () => {
         </Box>
 
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mt: 2 }}>
-          <Avatar
-            src={
-              userData?.avatar ||
-              "https://images.squarespace-cdn.com/content/v1/54b7b93ce4b0a3e130d5d232/1519986430884-H1GYNRLHN0VFRF6W5TAN/icon.png?format=750w"
-            }
-            sx={{ width: 80, height: 80, mb: 2 }}
+          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mt: 2 }}>
+          <IconButton onClick={() => document.getElementById("avatarUpload").click()} sx={{ cursor: "pointer" }}>
+            <Avatar
+              src={userData?.avatar || "https://images.squarespace-cdn.com/content/v1/54b7b93ce4b0a3e130d5d232/1519986430884-H1GYNRLHN0VFRF6W5TAN/icon.png?format=750w"}
+              sx={{ width: 80, height: 80, mb: 2 }}
+            />
+          </IconButton>
+          <input
+            type="file"
+            id="avatarUpload"
+            style={{ display: "none" }}
+            accept="image/*"
+            onChange={handleAvatarChange}
           />
           <Typography variant="h6">{userData?.username || "No Name"}</Typography>
           <Typography variant="body2">{userData?.email || "No Email"}</Typography>
+        </Box>
           <Button
             onClick={handleOpenModal}
             sx={{
@@ -388,7 +434,7 @@ export const Dashboard = () => {
             },
           }}
         >
-          <Outlet />
+          <Outlet key={location.pathname}/>
         </Box>
       </Box>
     </Box>

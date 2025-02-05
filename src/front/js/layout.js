@@ -16,6 +16,7 @@ import { FavoritesList } from "./component/dashboard/FavoritesList";
 import { KanbanBoard } from "./component/dashboard/KanbanBoard";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
+import { FavoritesSearch } from "./pages/FavoritesSearch"
 
 const Layout = () => {
   const theme = useTheme()
@@ -91,7 +92,7 @@ const Layout = () => {
             } />
             <Route path="search" element={<Search />} />
             <Route path="upload" element={<UploadFile />} />
-            <Route path="favorites" element={<FavoritesList />} />
+            <Route path="favorites" element={<FavoritesSearch />} />
 
           </Route>
 

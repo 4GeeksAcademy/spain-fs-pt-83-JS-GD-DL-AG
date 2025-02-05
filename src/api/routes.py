@@ -185,28 +185,31 @@ def handle_delete_user(id):
     return jsonify({}), 204
 
 @api.route('/user/<int:id>', methods=['PUT'])
-@jwt_required() 
+@jwt_required()
 def handle_update_user(id):
-    current_user = get_jwt_identity()
+    try:
+        current_user_email = get_jwt_identity()
+        user = User.query.filter_by(email=current_user_email).first()
 
-    user = User.query.get(id)
+        if user is None:
+            return jsonify({'msg': 'User not found'}), 404
 
-    if user is None:
-        return jsonify({'msg': 'User not found'}), 404
+        body = request.get_json()
+        if not body:
+            return jsonify({'msg': 'Missing JSON body'}), 400
 
-    if user.id != int(current_user) and current_user != "admin":
-        return jsonify({'msg': 'Permission denied'}), 403
+        if "username" in body:
+            user.username = body["username"]
+        if "email" in body:
+            user.email = body["email"]
 
-    body = request.get_json()
+        db.session.commit()
+        return jsonify(user.serialize()), 200
 
-    if "username" in body:
-        user.username = body["username"]
-    if "email" in body:
-        user.email = body["email"]
+    except Exception as e:
+        print(f"❌ Error: {str(e)}")
+        return jsonify({'error': 'Internal Server Error', 'message': str(e)}), 500
 
-    db.session.commit()
-
-    return jsonify(user.serialize()), 200
 
 @api.route('/dashboard', methods=['GET'])
 @jwt_required()
@@ -264,13 +267,14 @@ def login_user():
     user_data = {
         "id": user.id,
         "email": user.email,
-        "username": user.username
+        "username": user.username,
+        "avatar": user.avatar
     }
 
     return jsonify({
         "msg": "Inicio de sesión exitoso",
         "token": token,
-        "user": user_data
+        "user": user_data,
     }), 200
 ## CRUD Documents:
 @api.route('/documents', methods=['POST'])
@@ -393,14 +397,13 @@ def create_favorite():
 def get_favorites():
     try:
         current_user_id = get_jwt_identity()
-        print(f"🔍 User identity received: {current_user_id}")  # <-- Depuración
+        print(f"🔍 User identity received: {current_user_id}")
 
-        # Asegurar que `current_user_id` es un número obteniendo el ID real del usuario
         user = User.query.filter_by(email=current_user_id).first()
         if not user:
             return jsonify({"msg": "Usuario no encontrado"}), 404
 
-        favorites = Favorites.query.filter_by(user_id=user.id).all()  # <-- Usar `user.id`
+        favorites = Favorites.query.filter_by(user_id=user.id).all()
 
         if not favorites:
             return jsonify({"message": "No hay favoritos"}), 200
@@ -409,14 +412,16 @@ def get_favorites():
             "id": fav.id,
             "document_id": fav.documents.id,
             "document_title": fav.documents.title,
-            "document_type": fav.documents.type
+            "document_type": fav.documents.type,
+            "image_url": fav.documents.image_url  # 🔥 Agregamos la imagen
         } for fav in favorites]
 
         return jsonify(result), 200
 
     except Exception as e:
-        print(f"❌ Error interno: {e}")  # <-- Depuración
+        print(f"❌ Error interno: {e}")
         return jsonify({"error": "Error interno", "message": str(e)}), 500
+
 
 @api.route('/favorites/<int:id>', methods=['DELETE'])
 @jwt_required()
@@ -624,7 +629,7 @@ def get_achievements():
         # Lista de logros desbloqueados
         unlocked = [ach for ach in [3, 5, 10, 15, 30] if days_logged >= ach]
 
-        return jsonify(unlocked), 200  # 🔹 Devuelve JSON correctamente
+        return jsonify(unlocked), 200 
 
     except Exception as e:
         print(f"Error en /achievements: {e}")  # 🔍 Log para ver errores en la terminal
@@ -796,6 +801,45 @@ def complete_action(user_id):
         response["badge_unlocked"] = badge_unlocked.name
 
     return jsonify(response), 200
+
+@api.route('/user/avatar', methods=['PUT'])
+@jwt_required()
+def update_avatar():
+    user_email = get_jwt_identity()
+    user = User.query.filter_by(email=user_email).first()
+
+    if not user:
+        return jsonify({"msg": "User not found"}), 404
+
+    data = request.get_json()
+    new_avatar_url = data.get("avatar_url")
+
+    if not new_avatar_url:
+        return jsonify({"msg": "No avatar URL provided"}), 400
+
+    user.avatar = new_avatar_url
+    db.session.commit()
+
+    return jsonify({"msg": "Avatar updated successfully", "avatar": user.avatar}), 200
+
+@api.route('/user/<int:id>', methods=['GET'])
+@jwt_required()
+def get_user(id):
+    try:
+        user = User.query.get(id)
+
+        if not user:
+            return jsonify({"msg": "Usuario no encontrado"}), 404
+
+        return jsonify({
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "avatar": user.avatar
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": "Error interno", "message": str(e)}), 500
 
 
 # ------------------- INIT DATABASE -------------------

@@ -43,7 +43,7 @@ const LeaderboardCard = styled(Card)(({ theme }) => ({
 
 export const GamificationHub = () => {
   const theme = useTheme()
-  const isMobile = useMediaQuery("(max-width: 900px)");
+  const isMobile = useMediaQuery("(max-width: 1200px)");
   const storedUser = localStorage.getItem("user")
   const user = storedUser ? JSON.parse(storedUser) : null
   const userId = user ? user.id : null
@@ -154,8 +154,8 @@ export const GamificationHub = () => {
             <StarsIcon
               sx={{
                 position: "absolute",
-                top: -65,
-                left: -20,
+                top: -75,
+                left: -30,
                 fontSize: 100,
                 color: "#ff6a88",
                 transform: "rotate(-20deg)",
