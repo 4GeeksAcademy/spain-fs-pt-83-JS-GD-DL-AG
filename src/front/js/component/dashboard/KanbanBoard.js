@@ -14,7 +14,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import "../../../styles/Dashboard/kanbanBoard.css"
 
-const API_URL = process.env.BACKEND_URL+"/api"
 const API_URL = process.env.BACKEND_URL + "/api";
 
 const initialColumns = {
