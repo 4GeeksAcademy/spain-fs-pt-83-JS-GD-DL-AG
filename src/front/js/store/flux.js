@@ -32,14 +32,18 @@ const getState = ({ getStore, getActions, setStore }) => {
 
                     const data = await response.json();
 
-                    if (!response.ok) {
-                        setStore({ errorMessage: data.msg || "Error al iniciar sesión con Google", token: null });
-                        return { success: false, msg: data.msg || "Error al iniciar sesión con Google" };
-                    }
+					if (!response.ok) {
+						setStore({
+							errorMessage: data.msg || "Error al iniciar sesión con Google",
+							token: null,
+						});
+						return { success: false, msg: data.msg || "Error al iniciar sesión con Google" };
+					}
 
-                    localStorage.setItem("token", data.token);
-                    localStorage.setItem("user", JSON.stringify(data.user));
-                    setStore({ token: data.token, user: data.user, errorMessage: null });
+					
+					localStorage.setItem("token", data.token);
+					localStorage.setItem("user", JSON.stringify(data.user));
+					setStore({ token: data.token, user: data.user, errorMessage: null, });
 
                     return { success: true, user: data.user };
                 } catch (error) {
