@@ -42,68 +42,6 @@ with app.app_context():
 
 
 # -------------------- 📌 Función para inicializar datos --------------------
-<<<<<<< HEAD
-# def init_db_data():
-#  with app.app_context():
-#          db.create_all()
-
-#          # 🚀 Evitar duplicación de insignias
-#          if Badge.query.count() == 0:
-#              print("📌 Insertando insignias desde cero...")
-#              badges = [
-#                  Badge(name="Primer Recurso", description="Sube tu primer recurso", icon="https://example.com/icon1.png"),
-#                  Badge(name="Colaborador Activo", description="Contribuye con 10 recursos", icon="https://example.com/icon2.png"),
-#                  Badge(name="Maestro", description="Tus recursos han sido descargados 50 veces", icon="https://example.com/icon3.png"),
-#              ]
-#              db.session.add_all(badges)
-#              db.session.commit()
-#              print("✅ Insignias insertadas correctamente.")
-#          else:
-#              print("📌 Las insignias ya existen, no se vuelven a insertar.")
-
-#          # 🚀 Evitar duplicación en el ranking
-#          if Leaderboard.query.count() == 0:
-#              user = User.query.first()
-#              if user:
-#                  leaderboard_entry = Leaderboard(user_id=user.id, points=500)
-#                  db.session.add(leaderboard_entry)
-#                  db.session.commit()
-#                  print("✅ Usuario añadido al ranking.")
-#          else:
-#              print("📌 El ranking ya tiene datos, no se vuelve a insertar.")
-
-#          # 🚀 Asignar una insignia al usuario si no tiene ninguna
-#          if UserBadge.query.count() == 0:
-#              user = User.query.first()
-#              badge = Badge.query.first()
-            
-#              if user and badge:
-#                  user_badge = UserBadge(user_id=user.id, badge_id=badge.id)
-#                  db.session.add(user_badge)
-#                  db.session.commit()
-#                  print(f"✅ Insignia '{badge.name}' asignada automáticamente a {user.username}")
-#          else:
-#              print("📌 El usuario ya tiene insignias asignadas.")
-#      # Verificar y mostrar los datos en la base de datos
-# users = User.query.all()
-# badges = Badge.query.all()
-# leaderboard = Leaderboard.query.all()
-
-# print("📌 Usuarios en la base de datos:")
-# for user in users:
-#          print(user.to_dict())
-
-# print("📌 Insignias en la base de datos:")
-# for badge in badges:
-#          print(badge.to_dict())
-
-# print("📌 Ranking en la base de datos:")
-# for entry in leaderboard:
-#          print(entry.to_dict())
-#  # Ejecutar la inicialización de la base de datos
-# with app.app_context():
-#      init_db_data()
-=======
 def init_db_data():
     with app.app_context():
         db.create_all()
@@ -182,7 +120,6 @@ def init_db_data():
 with app.app_context():
     init_db_data()
 
->>>>>>> main
 
 # -------------------- 📌 Configuración de la API --------------------
 
