@@ -55,7 +55,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					
 					localStorage.setItem("token", data.token);
 					localStorage.setItem("user", JSON.stringify(data.user));
-					setStore({ token: data.token, user: data.user, errorMessage: null });
+					setStore({ token: data.token, user: data.user, errorMessage: null, });
 
 					return { success: true, user: data.user };
 				} catch (error) {

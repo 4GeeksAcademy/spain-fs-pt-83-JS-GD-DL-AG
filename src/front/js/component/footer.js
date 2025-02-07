@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography, IconButton } from "@mui/material";
-import FacebookIcon from "@mui/icons-material/Facebook";
-import TwitterIcon from "@mui/icons-material/Twitter";
+import GitHubIcon from '@mui/icons-material/GitHub';
+import XIcon from '@mui/icons-material/X';
 import InstagramIcon from "@mui/icons-material/Instagram";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 
@@ -32,7 +32,7 @@ export const Footer = () => {
 
       <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mb: 2 }}>
         <IconButton
-          href="https://facebook.com"
+          href="https://github.com/4GeeksAcademy/spain-fs-pt-83-JS-GD-DL-AG"
           target="_blank"
           sx={{
             color: "#e0e0e0",
@@ -43,10 +43,10 @@ export const Footer = () => {
             },
           }}
         >
-          <FacebookIcon />
+          <GitHubIcon />
         </IconButton>
         <IconButton
-          href="https://twitter.com"
+          href="https://x.com"
           target="_blank"
           sx={{
             color: "#e0e0e0",
@@ -57,7 +57,7 @@ export const Footer = () => {
             },
           }}
         >
-          <TwitterIcon />
+          <XIcon />
         </IconButton>
         <IconButton
           href="https://instagram.com"
