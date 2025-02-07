@@ -54,7 +54,7 @@ export const FavoritesList = () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("No hay token en localStorage.");
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/favorites`, {
+        const response = await fetch(`${process.env.BACKEND_URL}/api/favorites`, {
           method: "GET",
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         });
@@ -73,7 +73,7 @@ export const FavoritesList = () => {
   const handleDeleteFavorite = async (favoriteId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/favorites/${favoriteId}`, {
+      const response = await fetch(`${process.env.BACKEND_URL}/api/favorites/${favoriteId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
