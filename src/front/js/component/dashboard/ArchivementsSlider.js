@@ -21,7 +21,7 @@ export const AchievementsSlider = () => {
     const fetchAchievements = async () => {
       try {
         const token = sessionStorage.getItem("token");
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/achievements`, {
+        const response = await fetch(`${process.env.BACKEND_URL}/api/achievements`, {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${token}`,

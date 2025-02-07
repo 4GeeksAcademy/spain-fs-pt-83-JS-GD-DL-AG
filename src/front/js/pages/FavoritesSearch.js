@@ -18,8 +18,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { TypingEffect } from "../component/dashboard/TypingEffect";
 
-const API_URL = `${process.env.REACT_APP_BACKEND_URL}/api/documents`;
-const FAVORITES_API_URL = `${process.env.REACT_APP_BACKEND_URL}/api/favorites`;
+const API_URL = `${process.env.BACKEND_URL}/api/documents`;
+const FAVORITES_API_URL = `${process.env.BACKEND_URL}/api/favorites`;
 
 export const FavoritesSearch = () => {
     const [favorites, setFavorites] = useState([]);

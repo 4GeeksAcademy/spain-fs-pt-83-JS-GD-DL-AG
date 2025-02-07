@@ -52,7 +52,7 @@ export const GamificationHub = () => {
   const [badges, setBadges] = useState([])
   const [leaderboard, setLeaderboard] = useState([])
 
-  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL
+  const BACKEND_URL = process.env.BACKEND_URL
   const token = localStorage.getItem("token")
 
   useEffect(() => {
