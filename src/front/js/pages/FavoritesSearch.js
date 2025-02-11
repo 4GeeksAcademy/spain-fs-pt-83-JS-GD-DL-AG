@@ -18,8 +18,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { TypingEffect } from "../component/dashboard/TypingEffect";
 
-const API_URL = `${process.env.REACT_APP_BACKEND_URL}/api/documents`;
-const FAVORITES_API_URL = `${process.env.REACT_APP_BACKEND_URL}/api/favorites`;
+const API_URL = `${process.env.BACKEND_URL}/api/documents`;
+const FAVORITES_API_URL = `${process.env.BACKEND_URL}/api/favorites`;
 
 export const FavoritesSearch = () => {
     const [favorites, setFavorites] = useState([]);
@@ -214,19 +214,27 @@ export const FavoritesSearch = () => {
                                     }}
                                     sx={{
                                         position: "absolute",
-                                        top: 8,
-                                        right: 8,
+                                        top: "0.5rem",
+                                        right: "0.5rem",
                                         backgroundColor: "white",
                                         borderRadius: "50%",
                                         boxShadow: 2,
                                         transition: "0.3s ease-in-out",
+                                        width: "2.5rem",
+                                        height: "2.5rem",
+                                        minWidth: "32px",
+                                        minHeight: "32px",
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        padding: 0,
                                         "&:hover": {
-                                            backgroundColor: "white",
-                                            boxShadow: "0px 0px 10px rgba(255, 0, 0, 0.5)",
-                                            transform: "scale(1.1)",
-                                            opacity: 1,
+                                          backgroundColor: "white",
+                                          boxShadow: "0px 0px 10px rgba(255, 0, 0, 0.5)",
+                                          transform: "scale(1.1)",
+                                          opacity: 1,
                                         },
-                                    }}
+                                      }}
                                 >
                                     <FavoriteIcon color="error" />
                                 </IconButton>

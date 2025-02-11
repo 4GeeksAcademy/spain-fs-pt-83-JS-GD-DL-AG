@@ -82,7 +82,7 @@ export const UploadFile = ({ handleAction }) => {
       // 🔍 Verifica en la consola antes de enviar
       console.log("Data sent to backend:", documentData);
       // Enviar datos a la API Flask
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/documents`, {
+      const response = await fetch(`${process.env.BACKEND_URL}/api/documents`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(documentData),
