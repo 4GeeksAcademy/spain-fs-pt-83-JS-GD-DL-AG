@@ -4,45 +4,38 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import FeaturesResource from "../../img/Features/FeaturesResource.webp";
 import FeaturesClass from "../../img/Features/FeaturesClass.webp";
-import FeaturesDegree from "../../img/Features/FeaturesDegree.webp";
-import FeaturesGamification from "../../img/Features/FeaturesGamification.webp";
+import PomodoroClock from "../../img/Features/PomodoroClock.webp";
+import Kanban from "../../img/Features/Kanban.webp";
 import FeaturesTalent from "../../img/Features/FeaturesTalent.webp";
 
 const features = [
   {
-    title: "Interactive Learning",
+    title: "LearnVault Documents",
     description:
-      "Experience engaging tutorials, videos, and hands-on projects to elevate your skills.",
+      "You can easily upload files, share them with others, and organize your most important ones into favorites for quick access.",
     image: FeaturesResource,
     gradient: "linear-gradient(to right, #ff9a8b, #ff6a88)",
   },
   {
-    title: "Personalized Resources",
+    title: "Pomodoro Timer",
     description:
-      "Tailor your learning journey with resources that match your goals and preferences.",
-    image: FeaturesClass,
-    gradient: "linear-gradient(to right, #ff6a88, #ff99ac)",
+      "Take control of your work time with the Pomodoro technique. This tool lets you track your focus time and breaks, both short and long, adapting to your needs. Boost your efficiency!",
+    image: PomodoroClock,
+    gradient: "linear-gradient(to right, #ff6a88, #ff9a8b)",
   },
   {
     title: "Community Collaboration",
     description:
       "Connect with peers, share insights, and build together in a thriving community.",
-    image: FeaturesDegree,
-    gradient: "linear-gradient(to right, #ff99ac, #ff9a8b)",
+    image: FeaturesClass,
+    gradient: "linear-gradient(to right, #ff9a8b, #ff6a88)",
   },
   {
-    title: "Gamification",
+    title: "Kanban Board",
     description:
-      "Learn and have fun with badges, leaderboards, and rewards for your progress.",
-    image: FeaturesGamification,
-    gradient: "linear-gradient(to right, #ff9a8b, #ff99ac)",
-  },
-  {
-    title: "Advanced Planning Tools",
-    description:
-      "Stay on track with calendars, progress tracking, and goal-setting features.",
-    image: FeaturesTalent,
-    gradient: "linear-gradient(to right, #ff99ac, #ff6a88)",
+      "Organize your tasks visually and practically with our Kanbanboard. Add tasks and schedule them for specific moments throughout the week. Keep everything under control and ensure you meet your deadlines with ease.",
+    image: Kanban,
+    gradient: "linear-gradient(to right, #ff6a88, #ff9a8b)",
   },
 ];
 
@@ -114,7 +107,7 @@ export const FeaturesCarousel = () => {
                   top: "10%",
                   left: "30%",
                   transform: "translateX(-50%)",
-                  fontSize: { xs: "2.5rem", md: "6rem" }, // 📌 Ajustado a móviles
+                  fontSize: { xs: "2.5rem", md: "4rem", lg: "5rem", xl: "6rem" }, // 📌 Ajustado a móviles
                   fontWeight: "bold",
                   fontFamily: "'Poppins', sans-serif",
                   color: "rgba(255, 255, 255, 0)",
