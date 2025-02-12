@@ -12,7 +12,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { Context } from "../store/appContext"
 import { useNavigate, Outlet, useLocation } from "react-router-dom"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -25,6 +25,8 @@ import FavoriteIcon from "@mui/icons-material/Favorite"
 import DashboardIcon from "@mui/icons-material/Dashboard"
 import EditIcon from "@mui/icons-material/Edit"
 import LogoutIcon from "@mui/icons-material/Logout"
+import { PomodoroWidget } from "../component/dashboard/PomodoroWidget"
+import { MainTitle } from "../component/dashboard/MainTitle"
 
 export const Dashboard = () => {
   const { store, actions } = useContext(Context)
@@ -43,6 +45,7 @@ export const Dashboard = () => {
   const userId = localStorage.getItem("userId")
   const storedUser = localStorage.getItem("user")
   const user = storedUser ? JSON.parse(storedUser) : null
+  const isNotDashboard = location.pathname !== "/dashboard"
 
   useEffect(() => {
     if (!store.token || !store.user?.id) {
@@ -239,22 +242,56 @@ export const Dashboard = () => {
 
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mt: 2 }}>
           <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mt: 2 }}>
-          <IconButton onClick={() => document.getElementById("avatarUpload").click()} sx={{ cursor: "pointer" }}>
-            <Avatar
-              src={userData?.avatar || "https://images.squarespace-cdn.com/content/v1/54b7b93ce4b0a3e130d5d232/1519986430884-H1GYNRLHN0VFRF6W5TAN/icon.png?format=750w"}
-              sx={{ width: 80, height: 80, mb: 2 }}
+            <IconButton
+              onClick={() => document.getElementById("avatarUpload").click()}
+              sx={{ cursor: "pointer", position: "relative", mb: { xs: 1.5, sm: 2, }, }}
+            >
+              {/* Avatar */}
+              <Avatar
+                src={
+                  userData?.avatar ||
+                  "https://images.squarespace-cdn.com/content/v1/54b7b93ce4b0a3e130d5d232/1519986430884-H1GYNRLHN0VFRF6W5TAN/icon.png?format=750w"
+                }
+                sx={{
+                  width: { xs: 60, sm: 70, md: 80 }, // Tamaño adaptable según la pantalla
+                  height: { xs: 60, sm: 70, md: 80 },
+                  mb: { xs: 1, sm: 2, md: 3 },
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              />
+
+              {/* Edit Icon (Ahora perfectamente redondo) */}
+              <Box
+                sx={{
+                  position: "absolute",
+                  bottom: { xs: -15, sm: -15, md: 25 }, // Ajusta la posición en diferentes tamaños
+                  right: { xs: 10, sm: 8, md: 15 },
+                  width: { xs: 18, sm: 22, md: 25 }, // Ajusta el tamaño del botón
+                  height: { xs: 18, sm: 22, md: 25 },
+                  backgroundColor: "white",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: 2,
+                }}
+              >
+                <EditIcon fontSize="small" sx={{ color: "gray", fontSize: { xs: 12, sm: 14, md: 16 } }} />
+              </Box>
+
+            </IconButton>
+            <input
+              type="file"
+              id="avatarUpload"
+              style={{ display: "none" }}
+              accept="image/*"
+              onChange={handleAvatarChange}
             />
-          </IconButton>
-          <input
-            type="file"
-            id="avatarUpload"
-            style={{ display: "none" }}
-            accept="image/*"
-            onChange={handleAvatarChange}
-          />
-          <Typography variant="h6">{userData?.username || "No Name"}</Typography>
-          <Typography variant="body2">{userData?.email || "No Email"}</Typography>
-        </Box>
+            <Typography variant="h6">{userData?.username || "No Name"}</Typography>
+            <Typography variant="body2">{userData?.email || "No Email"}</Typography>
+          </Box>
           <Button
             onClick={handleOpenModal}
             sx={{
@@ -262,22 +299,32 @@ export const Dashboard = () => {
               mt: 2,
               background: "#ff6a88",
               ":hover": { background: "#e85c7b" },
-              borderRadius: "50%",
-              width: "40px",
-              height: "40px",
-              minWidth: "40px",
+              borderRadius: "8px",
+              width: "150px",
+              height: "45px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               padding: 0,
             }}
           >
-            <EditIcon fontSize="small" />
+            EDIT PROFILE
           </Button>
         </Box>
-
+        <AnimatePresence>
+          {isNotDashboard && (
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 50 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Divider sx={{ my: 3 }} />
+              <PomodoroWidget />
+            </motion.div>
+          )}
+        </AnimatePresence>
         <Divider sx={{ my: 3 }} />
-
         <Button
           startIcon={<DashboardIcon />}
           onClick={() => {
@@ -402,22 +449,10 @@ export const Dashboard = () => {
         }}
       >
         {location.pathname === "/dashboard" && (
-          <Typography
-            sx={{
-              marginLeft: isSmall ? 0 : 5,
-              fontFamily: "'Poppins', sans-serif",
-              fontSize: isExtraSmall ? "0.9em" : isSmall ? "1.5em" : isMedium ? "1.8em" : "2em",
-              fontWeight: 900,
-              color: "white",
-              textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)",
-              textAlign: isSmall ? "center" : "left",
-              mb: isExtraSmall ? 1 : 3,
-            }}
-          >
-            Welcome {user?.username || "User"}
-          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "center", mb: 1 }}>
+            <MainTitle text={`Welcome ${user?.username || "User"}`} speed={80} />
+          </Box>
         )}
-
         <Box
           sx={{
             flex: 1,
@@ -434,7 +469,7 @@ export const Dashboard = () => {
             },
           }}
         >
-          <Outlet key={location.pathname}/>
+          <Outlet key={location.pathname} />
         </Box>
       </Box>
     </Box>

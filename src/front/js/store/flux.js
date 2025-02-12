@@ -125,7 +125,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 			
 			logout: () => {
 				setStore({ token: null, errorMessage: null });
-				localStorage.removeItem("token");
+				localStorage.removeItem("user");
+				localStorage.removeItem("timeLeft");
+				localStorage.removeItem("soundEnabled");
+				localStorage.removeItem("shortBreakTime");
+				localStorage.removeItem("longBreakTime");
+				localStorage.removeItem("focusTime");
+				localStorage.removeItem("notificationsEnabled");
 			},
 
 			

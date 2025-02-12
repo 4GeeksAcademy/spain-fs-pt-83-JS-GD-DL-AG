@@ -2,30 +2,30 @@ import React from "react";
 import { Box, Typography, Grid, Card, CardContent, Avatar } from "@mui/material";
 import SchoolIcon from "@mui/icons-material/School";
 import PeopleIcon from "@mui/icons-material/People";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import chooseBg from "../../img/chooseBg.webp";
+import ViewKanbanIcon from '@mui/icons-material/ViewKanban';
 
 const cardsData = [
   {
     title: "Comprehensive Resources",
     description:
-      "Access a wide variety of educational materials like videos, books, and tools tailored for your success.",
+      "Access a wide variety of quality educational materials across multiple subjects and formats.",
     gradient: "linear-gradient(135deg, #ff9a8b, #ff6a88)",
     icon: <SchoolIcon sx={{ fontSize: { xs: 50, sm: 65, md: 75 }, filter: "drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.3))" }} />,
   },
   {
     title: "Collaborative Community",
     description:
-      "Connect with a thriving community to share knowledge, collaborate, and grow together.",
+      "Connect with fellow learners to share ideas, ask questions, and grow together.",
     gradient: "linear-gradient(135deg, #ff9a8b, #ff6a88)",
     icon: <PeopleIcon sx={{ fontSize: { xs: 50, sm: 65, md: 75 }, filter: "drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.3))" }} />,
   },
   {
-    title: "Gamified Learning",
+    title: "Custom Organization Tools",
     description:
-      "Earn badges, climb leaderboards, and enjoy a fun, interactive learning experience.",
+      "Easily organize, track, and filter content to enhance your learning experience.",
     gradient: "linear-gradient(135deg, #ff9a8b, #ff6a88)",
-    icon: <EmojiEventsIcon sx={{ fontSize: { xs: 50, sm: 65, md: 75 }, filter: "drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.3))" }} />,
+    icon: <ViewKanbanIcon sx={{ fontSize: { xs: 50, sm: 65, md: 75 }, filter: "drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.3))" }} />,
   },
 ];
 
