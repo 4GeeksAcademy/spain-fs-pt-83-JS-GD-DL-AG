@@ -90,22 +90,29 @@ const getState = ({ getStore, getActions, setStore }) => {
                     });
                     const data = await response.json();
 
-                    if (!response.ok) {
-                        return { success: false, msg: data.msg || "Error registering user." };
-                    }
+					if (!response.ok) {
+						return { success: false, msg: data.msg || "Error registering user." };
+					}
 
-                    return { success: true, msg: "Registration successful!" };
-                } catch (error) {
-                    console.error("Error connecting to the server:", error);
-                    return { success: false, msg: "Could not connect to the server." };
-                }
-            },
+					
+					return { success: true, msg: "Registration successful!" };
+				} catch (error) {
+					console.error("Error connecting to the server:", error);
+					return { success: false, msg: "Could not connect to the server." };
+				}
+			},
 
-            logout: () => {
-                setStore({ token: null, errorMessage: null, favorites: [] }); // 🔹 Limpiar favoritos al cerrar sesión
-                localStorage.removeItem("token");
-                localStorage.removeItem("favorites");
-            },
+			
+			logout: () => {
+				setStore({ token: null, errorMessage: null });
+				localStorage.removeItem("user");
+				localStorage.removeItem("timeLeft");
+				localStorage.removeItem("soundEnabled");
+				localStorage.removeItem("shortBreakTime");
+				localStorage.removeItem("longBreakTime");
+				localStorage.removeItem("focusTime");
+				localStorage.removeItem("notificationsEnabled");
+			},
 
             // ✅ Obtener lista de favoritos del backend
             getFavorites: async () => {

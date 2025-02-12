@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Typography, Box } from "@mui/material";
 
-export const TypingEffect = ({ text, speed = 100 }) => {
+export const MainTitle = ({ text, speed = 100 }) => {
   const [displayedText, setDisplayedText] = useState("");
   const [showCursor, setShowCursor] = useState(true);
 
@@ -51,13 +51,12 @@ export const TypingEffect = ({ text, speed = 100 }) => {
           letterSpacing: { xs: "0px", sm: "2px" },
           whiteSpace: "nowrap",
           overflow: "hidden",
-          background: "linear-gradient(45deg, #ff6a88, #ff99ac)",
+          background: "white",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
-          textShadow: "0px 3px 10px rgba(255, 106, 136, 0.4)",
           display: "flex",
           alignItems: "center",
-          fontSize: { xs: "0.9rem", sm: "1.5rem", md: "2rem" },
+          fontSize: { xs: "1.5rem", sm: "2rem", md: "2.5rem" },
         }}
       >
         {displayedText}
@@ -67,7 +66,7 @@ export const TypingEffect = ({ text, speed = 100 }) => {
             display: "inline-block",
             width: { xs: "2px", sm: "4px" },
             height: "1em",
-            backgroundColor: "#ff6a88",
+            backgroundColor: "white",
             marginLeft: { xs: "3px", sm: "5px" },
             animation: "blink 1s infinite",
             opacity: showCursor ? 1 : 0.2,
